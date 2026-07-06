@@ -18,7 +18,8 @@ public static class DependencyInjection
             options.UseSqlServer(connectionString, sql =>
                 sql.MigrationsAssembly(typeof(DependencyInjection).Assembly.FullName)));
 
-        services.AddScoped<IMatchRepository, MatchRepository>();
+        services.AddScoped<ITeamRepository, TeamRepository>();
+        services.AddScoped<IFixtureRepository, FixtureRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         return services;

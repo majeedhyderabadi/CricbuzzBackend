@@ -4,6 +4,7 @@ using MatchApi.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MatchApi.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260706022117_RemoveMatchEntity")]
+    partial class RemoveMatchEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -231,30 +234,6 @@ namespace MatchApi.Infrastructure.Migrations
                             Name = "Okafor",
                             Role = "Midfielder",
                             TeamId = new Guid("22222222-2222-2222-2222-222222222222")
-                        },
-                        new
-                        {
-                            Id = new Guid("55555555-5555-5555-5555-555555555551"),
-                            CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Name = "Abhishek S",
-                            Role = "Batter",
-                            TeamId = new Guid("55555555-5555-5555-5555-555555555555")
-                        },
-                        new
-                        {
-                            Id = new Guid("55555555-5555-5555-5555-555555555552"),
-                            CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Name = "Bhuvneshwar K",
-                            Role = "Bowler",
-                            TeamId = new Guid("55555555-5555-5555-5555-555555555555")
-                        },
-                        new
-                        {
-                            Id = new Guid("55555555-5555-5555-5555-555555555553"),
-                            CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Name = "Nitish R",
-                            Role = "All-rounder",
-                            TeamId = new Guid("55555555-5555-5555-5555-555555555555")
                         });
                 });
 
@@ -305,14 +284,6 @@ namespace MatchApi.Infrastructure.Migrations
                             CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "NVian FC",
                             Sport = "Football"
-                        },
-                        new
-                        {
-                            Id = new Guid("55555555-5555-5555-5555-555555555555"),
-                            ColorHex = "#F97316",
-                            CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Name = "Hyderabad",
-                            Sport = "Cricket"
                         });
                 });
 

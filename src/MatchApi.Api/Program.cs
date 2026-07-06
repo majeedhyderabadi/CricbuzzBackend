@@ -23,7 +23,7 @@ builder.Services.AddSwaggerGen(options =>
     {
         Title = "MatchApi",
         Version = "v1",
-        Description = "Clean Architecture minimal API for managing matches."
+        Description = "Clean Architecture minimal API for managing fixtures."
     });
 
     var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -50,7 +50,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapMatchEndpoints();
+app.MapFixtureEndpoints();
 
 app.MapGet("/", () => Results.Ok(new { service = "MatchApi", status = "running" }))
     .ExcludeFromDescription();
