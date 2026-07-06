@@ -4,17 +4,17 @@ using MatchApi.Infrastructure.Persistence;
 
 namespace MatchApi.Infrastructure.Repositories;
 
-public class MatchRepository : IMatchRepository
+public class FixtureRepository : IFixtureRepository
 {
     private readonly ApplicationDbContext _context;
 
-    public MatchRepository(ApplicationDbContext context)
+    public FixtureRepository(ApplicationDbContext context)
     {
         _context = context;
     }
 
-    public async Task AddAsync(Match match, CancellationToken cancellationToken)
+    public async Task AddAsync(Fixture fixture, CancellationToken cancellationToken)
     {
-        await _context.Matches.AddAsync(match, cancellationToken);
+        await _context.Fixtures.AddAsync(fixture, cancellationToken);
     }
 }

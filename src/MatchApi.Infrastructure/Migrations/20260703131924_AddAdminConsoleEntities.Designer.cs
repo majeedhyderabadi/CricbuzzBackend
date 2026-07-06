@@ -4,6 +4,7 @@ using MatchApi.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MatchApi.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260703131924_AddAdminConsoleEntities")]
+    partial class AddAdminConsoleEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,51 +24,6 @@ namespace MatchApi.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("MatchApi.Domain.Entities.AdminUser", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)");
-
-                    b.Property<string>("PasswordSalt")
-                        .IsRequired()
-                        .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)");
-
-                    b.Property<DateTime?>("UpdatedAtUtc")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Email")
-                        .IsUnique();
-
-                    b.ToTable("AdminUsers", (string)null);
-                });
 
             modelBuilder.Entity("MatchApi.Domain.Entities.CommentaryEntry", b =>
                 {
@@ -88,7 +46,7 @@ namespace MatchApi.Infrastructure.Migrations
                         .HasMaxLength(280)
                         .HasColumnType("nvarchar(280)");
 
-                    b.Property<Guid?>("PlayerId")
+                    b.Property<Guid>("PlayerId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Side")
@@ -158,6 +116,46 @@ namespace MatchApi.Infrastructure.Migrations
                     b.HasIndex("HomeTeamId");
 
                     b.ToTable("Fixtures", (string)null);
+                });
+
+            modelBuilder.Entity("MatchApi.Domain.Entities.Match", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AwayTeam")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("HomeTeam")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime>("MatchDateUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Venue")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Matches", (string)null);
                 });
 
             modelBuilder.Entity("MatchApi.Domain.Entities.Player", b =>
@@ -231,30 +229,6 @@ namespace MatchApi.Infrastructure.Migrations
                             Name = "Okafor",
                             Role = "Midfielder",
                             TeamId = new Guid("22222222-2222-2222-2222-222222222222")
-                        },
-                        new
-                        {
-                            Id = new Guid("55555555-5555-5555-5555-555555555551"),
-                            CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Name = "Abhishek S",
-                            Role = "Batter",
-                            TeamId = new Guid("55555555-5555-5555-5555-555555555555")
-                        },
-                        new
-                        {
-                            Id = new Guid("55555555-5555-5555-5555-555555555552"),
-                            CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Name = "Bhuvneshwar K",
-                            Role = "Bowler",
-                            TeamId = new Guid("55555555-5555-5555-5555-555555555555")
-                        },
-                        new
-                        {
-                            Id = new Guid("55555555-5555-5555-5555-555555555553"),
-                            CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Name = "Nitish R",
-                            Role = "All-rounder",
-                            TeamId = new Guid("55555555-5555-5555-5555-555555555555")
                         });
                 });
 
@@ -305,14 +279,6 @@ namespace MatchApi.Infrastructure.Migrations
                             CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "NVian FC",
                             Sport = "Football"
-                        },
-                        new
-                        {
-                            Id = new Guid("55555555-5555-5555-5555-555555555555"),
-                            ColorHex = "#F97316",
-                            CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Name = "Hyderabad",
-                            Sport = "Cricket"
                         });
                 });
 
@@ -327,7 +293,8 @@ namespace MatchApi.Infrastructure.Migrations
                     b.HasOne("MatchApi.Domain.Entities.Player", "Player")
                         .WithMany()
                         .HasForeignKey("PlayerId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Fixture");
 

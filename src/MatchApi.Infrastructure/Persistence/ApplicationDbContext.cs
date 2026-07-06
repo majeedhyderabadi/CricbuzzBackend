@@ -10,7 +10,11 @@ public class ApplicationDbContext : DbContext
     {
     }
 
-    public DbSet<Match> Matches => Set<Match>();
+    public DbSet<Team> Teams => Set<Team>();
+    public DbSet<Player> Players => Set<Player>();
+    public DbSet<Fixture> Fixtures => Set<Fixture>();
+    public DbSet<CommentaryEntry> CommentaryEntries => Set<CommentaryEntry>();
+    public DbSet<AdminUser> AdminUsers => Set<AdminUser>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
