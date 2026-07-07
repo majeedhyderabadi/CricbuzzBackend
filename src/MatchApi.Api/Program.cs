@@ -1,5 +1,8 @@
 using MatchApi.Api.Endpoints;
+using MatchApi.Api.Hubs;
+using MatchApi.Api.Realtime;
 using MatchApi.Application;
+using MatchApi.Application.Common.Interfaces;
 using MatchApi.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.OpenApi;
@@ -10,6 +13,24 @@ var builder = WebApplication.CreateBuilder(args);
 // Layer registrations (Clean Architecture composition root)
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+
+// SignalR powers the real-time commentary feed; the broadcaster adapts the
+// application layer's ICommentaryBroadcaster port onto a SignalR hub context.
+builder.Services.AddSignalR();
+builder.Services.AddScoped<ICommentaryBroadcaster, SignalRCommentaryBroadcaster>();
+
+const string ReactClientCorsPolicy = "ReactClient";
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+    ?? new[] { "http://localhost:3000", "http://localhost:5173" };
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(ReactClientCorsPolicy, policy =>
+        policy.WithOrigins(allowedOrigins)
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials());
+});
 
 builder.Services.AddEndpointsApiExplorer();
 
@@ -50,7 +71,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors(ReactClientCorsPolicy);
+
 app.MapFixtureEndpoints();
+app.MapCommentaryEndpoints();
+app.MapHub<CommentaryHub>("/hubs/commentary");
 
 app.MapGet("/", () => Results.Ok(new { service = "MatchApi", status = "running" }))
     .ExcludeFromDescription();
