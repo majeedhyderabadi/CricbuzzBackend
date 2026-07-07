@@ -73,6 +73,7 @@ app.UseHttpsRedirection();
 
 app.UseCors(ReactClientCorsPolicy);
 
+app.MapAdminEndpoints();
 app.MapFixtureEndpoints();
 app.MapCommentaryEndpoints();
 app.MapHub<CommentaryHub>("/hubs/commentary");
