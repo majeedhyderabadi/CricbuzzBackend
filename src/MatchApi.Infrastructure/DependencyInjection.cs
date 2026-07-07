@@ -20,6 +20,7 @@ public static class DependencyInjection
 
         services.AddScoped<ITeamRepository, TeamRepository>();
         services.AddScoped<IFixtureRepository, FixtureRepository>();
+        services.AddScoped<IPlayerRepository, PlayerRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         return services;
