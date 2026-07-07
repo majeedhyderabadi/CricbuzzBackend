@@ -22,6 +22,7 @@ public static class DependencyInjection
         services.AddScoped<IFixtureRepository, FixtureRepository>();
         services.AddScoped<IPlayerRepository, PlayerRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IAdminUserRepository, AdminUserRepository>();
 
         return services;
     }
