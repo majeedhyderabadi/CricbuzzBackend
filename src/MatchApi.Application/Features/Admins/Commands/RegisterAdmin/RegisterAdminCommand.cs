@@ -1,5 +1,4 @@
-﻿using MatchApi.Domain.DTOs;
-using MediatR;
+﻿using MediatR;
 
 namespace MatchApi.Application.Features.Admins.Commands.RegisterAdmin;
 
@@ -9,6 +8,3 @@ public record RegisterAdminCommand(
     string Email,
     string Password
 ) : IRequest<Guid>;
-
-public record GetPendingApprovalRequestsQuery()
-    : IRequest<List<PendingApprovalDto>>;

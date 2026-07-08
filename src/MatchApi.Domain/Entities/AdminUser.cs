@@ -10,8 +10,6 @@ public class AdminUser : BaseEntity
     public string Email { get; set; } = string.Empty;
     public string PasswordHash { get; set; } = string.Empty;
     public string PasswordSalt { get; set; } = string.Empty;
-    public bool IsApproved { get; set; } = false;
-
 
     public static AdminUser Create(string firstName, string lastName, string email, string passwordHash, string passwordSalt)
     {
@@ -56,14 +54,5 @@ public class AdminUser : BaseEntity
         {
             return false;
         }
-    }
-    public void Approve()
-    {
-        if (IsApproved)
-        {
-            throw new InvalidOperationException("Admin user is already approved.");
-        }
-
-        IsApproved = true;
     }
 }
