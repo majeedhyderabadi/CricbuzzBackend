@@ -9,17 +9,20 @@ public class CreateCommentaryCommandHandler : IRequestHandler<CreateCommentaryCo
 {
     private readonly IFixtureRepository _fixtureRepository;
     private readonly IPlayerRepository _playerRepository;
+    private readonly ICommentaryRepository _commentaryRepository;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICommentaryBroadcaster _broadcaster;
 
     public CreateCommentaryCommandHandler(
         IFixtureRepository fixtureRepository,
         IPlayerRepository playerRepository,
+        ICommentaryRepository commentaryRepository,
         IUnitOfWork unitOfWork,
         ICommentaryBroadcaster broadcaster)
     {
         _fixtureRepository = fixtureRepository;
         _playerRepository = playerRepository;
+        _commentaryRepository = commentaryRepository;
         _unitOfWork = unitOfWork;
         _broadcaster = broadcaster;
     }
@@ -45,6 +48,13 @@ public class CreateCommentaryCommandHandler : IRequestHandler<CreateCommentaryCo
 
         var entry = fixture.AddCommentary(request.Side, request.PlayerId, request.Action, request.Note);
 
+        // Explicitly registered as Added: the entry's Id is already a real (non-default) Guid by the
+        // time it's attached via the Fixture's navigation collection, so EF's automatic graph-discovery
+        // during DetectChanges cannot tell "new entity with a pre-assigned key" from "existing entity
+        // being reattached" and ends up tracking it as Modified, generating an UPDATE for a row that
+        // never existed. Adding it explicitly forces the correct Added state.
+        await _commentaryRepository.AddAsync(entry, cancellationToken);
+
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         var dto = new CommentaryDto(
@@ -56,10 +66,10 @@ public class CreateCommentaryCommandHandler : IRequestHandler<CreateCommentaryCo
             entry.Action.ToString(),
             entry.Note,
             entry.CreatedAtUtc,
-            fixture.HomeScore,
-            fixture.HomeWickets,
-            fixture.AwayScore,
-            fixture.AwayWickets);
+            fixture.HomeScore.Runs,
+            fixture.HomeScore.Wickets,
+            fixture.AwayScore.Runs,
+            fixture.AwayScore.Wickets);
 
         await _broadcaster.BroadcastAsync(dto, cancellationToken);
 

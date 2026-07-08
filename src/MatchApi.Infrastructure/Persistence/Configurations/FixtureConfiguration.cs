@@ -25,6 +25,18 @@ public class FixtureConfiguration : IEntityTypeConfiguration<Fixture>
         builder.Property(f => f.ScheduledAtUtc)
             .IsRequired();
 
+        builder.OwnsOne(f => f.HomeScore, score =>
+        {
+            score.Property(s => s.Runs).HasColumnName("HomeScore");
+            score.Property(s => s.Wickets).HasColumnName("HomeWickets");
+        });
+
+        builder.OwnsOne(f => f.AwayScore, score =>
+        {
+            score.Property(s => s.Runs).HasColumnName("AwayScore");
+            score.Property(s => s.Wickets).HasColumnName("AwayWickets");
+        });
+
         builder.HasOne(f => f.HomeTeam)
             .WithMany()
             .HasForeignKey(f => f.HomeTeamId)
