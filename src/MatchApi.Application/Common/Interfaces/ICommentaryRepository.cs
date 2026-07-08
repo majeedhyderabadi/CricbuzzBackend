@@ -1,0 +1,8 @@
+using MatchApi.Domain.Entities;
+
+namespace MatchApi.Application.Common.Interfaces;
+
+public interface ICommentaryRepository
+{
+    Task AddAsync(CommentaryEntry entry, CancellationToken cancellationToken);
+}

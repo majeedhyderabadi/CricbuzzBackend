@@ -15,10 +15,8 @@ public class Fixture : BaseEntity
     public DateTime ScheduledAtUtc { get; set; }
     public MatchStatus Status { get; set; } = MatchStatus.Scheduled;
 
-    public int HomeScore { get; set; }
-    public int? HomeWickets { get; set; }
-    public int AwayScore { get; set; }
-    public int? AwayWickets { get; set; }
+    public Score HomeScore { get; set; } = null!;
+    public Score AwayScore { get; set; } = null!;
 
     public ICollection<CommentaryEntry> CommentaryEntries { get; set; } = new List<CommentaryEntry>();
 
@@ -34,6 +32,8 @@ public class Fixture : BaseEntity
             throw new InvalidOperationException("Both teams must play the same sport.");
         }
 
+        var tracksWickets = homeTeam.Sport == Sport.Cricket;
+
         return new Fixture
         {
             HomeTeamId = homeTeam.Id,
@@ -41,8 +41,8 @@ public class Fixture : BaseEntity
             Sport = homeTeam.Sport,
             ScheduledAtUtc = scheduledAtUtc,
             Status = MatchStatus.Scheduled,
-            HomeWickets = homeTeam.Sport == Sport.Cricket ? 0 : null,
-            AwayWickets = homeTeam.Sport == Sport.Cricket ? 0 : null
+            HomeScore = Score.Zero(tracksWickets),
+            AwayScore = Score.Zero(tracksWickets)
         };
     }
 
@@ -53,19 +53,7 @@ public class Fixture : BaseEntity
             throw new InvalidOperationException("Ball-by-ball commentary is only supported for cricket fixtures.");
         }
 
-        var runs = action switch
-        {
-            CommentaryAction.Six => 6,
-            CommentaryAction.Four => 4,
-            CommentaryAction.Single => 1,
-            CommentaryAction.Wide => 1,
-            CommentaryAction.Wicket => 0,
-            _ => 0
-        };
-
-        var wickets = action == CommentaryAction.Wicket ? 1 : 0;
-
-        ApplyDelta(side, runs, wickets);
+        ScoreFor(side).Apply(action.ToRuns(), action.ToWicketDelta());
 
         var entry = CommentaryEntry.Create(Id, side, playerId, action, note);
         CommentaryEntries.Add(entry);
@@ -81,7 +69,7 @@ public class Fixture : BaseEntity
             throw new InvalidOperationException("Wickets can only be adjusted for cricket fixtures.");
         }
 
-        ApplyDelta(side, runsDelta, wicketsDelta);
+        ScoreFor(side).Apply(runsDelta, wicketsDelta);
 
         var action = wicketsDelta != 0
             ? CommentaryAction.Wicket
@@ -97,23 +85,5 @@ public class Fixture : BaseEntity
         return entry;
     }
 
-    private void ApplyDelta(FixtureSide side, int runsDelta, int wicketsDelta)
-    {
-        if (side == FixtureSide.Home)
-        {
-            HomeScore += runsDelta;
-            if (wicketsDelta != 0)
-            {
-                HomeWickets = (HomeWickets ?? 0) + wicketsDelta;
-            }
-        }
-        else
-        {
-            AwayScore += runsDelta;
-            if (wicketsDelta != 0)
-            {
-                AwayWickets = (AwayWickets ?? 0) + wicketsDelta;
-            }
-        }
-    }
+    private Score ScoreFor(FixtureSide side) => side == FixtureSide.Home ? HomeScore : AwayScore;
 }
