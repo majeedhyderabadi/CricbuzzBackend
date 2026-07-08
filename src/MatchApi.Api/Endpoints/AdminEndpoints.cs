@@ -1,4 +1,6 @@
-﻿using MatchApi.Application.Features.Admins.Commands.RegisterAdmin;
+﻿using MatchApi.Application.Features.Admins.Commands.ApproveAdmin;
+using MatchApi.Application.Features.Admins.Commands.GetAllAdmins;
+using MatchApi.Application.Features.Admins.Commands.RegisterAdmin;
 using MediatR;
 
 namespace MatchApi.Api.Endpoints;
@@ -28,6 +30,41 @@ public static class AdminEndpoints
             .WithName("RegisterAdmin")
             .WithSummary("Registers a new admin user");
 
+        group.MapGet(
+           "/approval-requests",
+           async (ISender sender) =>
+           {
+               var result = await sender.Send(new GetPendingApprovalRequestsQuery());
+
+               return Results.Ok(result);
+           })
+           .WithName("GetPendingApprovalRequests")
+           .WithSummary("Gets all pending admin approval requests.");
+
+        group.MapPut(
+            "/approve/{id:guid}",
+            async (Guid id, ISender sender) =>
+            {
+                await sender.Send(new ApproveAdminCommand(id));
+
+                return Results.Ok(new
+                {
+                    Message = "Admin approved successfully."
+                });
+            })
+            .WithName("ApproveAdmin")
+            .WithSummary("Approves an admin user.");
+
+        group.MapGet(
+                    "/all",
+                    async (ISender sender) =>
+                    {
+                        var result = await sender.Send(new GetAllAdminsQuery());
+
+                        return Results.Ok(result);
+                    })
+                    .WithName("GetAllAdmins")
+                    .WithSummary("Gets all admin users.");
         return app;
     }
 }
