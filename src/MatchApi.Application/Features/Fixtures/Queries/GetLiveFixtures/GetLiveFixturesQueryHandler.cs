@@ -1,0 +1,36 @@
+using MatchApi.Application.Common.Interfaces;
+using MatchApi.Application.Features.Fixtures.Common;
+using MediatR;
+
+namespace MatchApi.Application.Features.Fixtures.Queries.GetLiveFixtures;
+
+public class GetLiveFixturesQueryHandler : IRequestHandler<GetLiveFixturesQuery, IReadOnlyList<FixtureDto>>
+{
+    private readonly IFixtureRepository _fixtureRepository;
+
+    public GetLiveFixturesQueryHandler(IFixtureRepository fixtureRepository)
+    {
+        _fixtureRepository = fixtureRepository;
+    }
+
+    public async Task<IReadOnlyList<FixtureDto>> Handle(GetLiveFixturesQuery request, CancellationToken cancellationToken)
+    {
+        var fixtures = await _fixtureRepository.GetLiveAsync(cancellationToken);
+
+        return fixtures
+            .Select(f => new FixtureDto(
+                f.Id,
+                f.HomeTeamId,
+                f.HomeTeam?.Name ?? string.Empty,
+                f.AwayTeamId,
+                f.AwayTeam?.Name ?? string.Empty,
+                f.Sport.ToString(),
+                f.ScheduledAtUtc,
+                f.Status.ToString(),
+                f.HomeScore.Runs,
+                f.HomeScore.Wickets,
+                f.AwayScore.Runs,
+                f.AwayScore.Wickets))
+            .ToList();
+    }
+}

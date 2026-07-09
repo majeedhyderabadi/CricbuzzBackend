@@ -1,5 +1,7 @@
 using FluentValidation;
 using MatchApi.Application.Features.Fixtures.Commands.CreateFixture;
+using MatchApi.Application.Features.Fixtures.Common;
+using MatchApi.Application.Features.Fixtures.Queries.GetLiveFixtures;
 using MediatR;
 
 namespace MatchApi.Api.Endpoints;
@@ -19,7 +21,18 @@ public static class FixtureEndpoints
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status500InternalServerError);
 
+        group.MapGet("/live", GetLiveFixtures)
+            .WithName("GetLiveFixtures")
+            .WithSummary("Gets all fixtures that are currently live")
+            .Produces<IReadOnlyList<FixtureDto>>(StatusCodes.Status200OK);
+
         return app;
+    }
+
+    private static async Task<IResult> GetLiveFixtures(ISender sender, CancellationToken cancellationToken)
+    {
+        var response = await sender.Send(new GetLiveFixturesQuery(), cancellationToken);
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> CreateFixture(
