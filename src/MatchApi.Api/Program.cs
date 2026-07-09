@@ -34,9 +34,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddEndpointsApiExplorer();
 
-
 // Configure Swagger/OpenAPI
-
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -75,7 +73,10 @@ app.UseCors(ReactClientCorsPolicy);
 
 app.MapAdminEndpoints();
 app.MapFixtureEndpoints();
+app.MapTeamsEndpoints();
+app.MapPlayerEndpoints();
 app.MapCommentaryEndpoints();
+
 app.MapHub<CommentaryHub>("/hubs/commentary");
 
 app.MapGet("/", () => Results.Ok(new { service = "MatchApi", status = "running" }))
