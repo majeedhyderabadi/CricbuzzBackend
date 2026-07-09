@@ -5,4 +5,8 @@ namespace MatchApi.Application.Common.Interfaces;
 public interface IPlayerRepository
 {
     Task<Player?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task AddAsync(Player player, CancellationToken cancellationToken);
+    Task<List<Player>> GetPlayersByTeamIdAsync(
+     Guid teamId,
+     CancellationToken cancellationToken);
 }
