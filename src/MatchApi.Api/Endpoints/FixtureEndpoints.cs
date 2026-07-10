@@ -2,6 +2,7 @@ using FluentValidation;
 using MatchApi.Application.Features.Fixtures.Commands.CreateFixture;
 using MatchApi.Application.Features.Fixtures.Common;
 using MatchApi.Application.Features.Fixtures.Queries.GetLiveFixtures;
+using MatchApi.Application.Features.Fixtures.Queries.GetTopPerformers;
 using MediatR;
 
 namespace MatchApi.Api.Endpoints;
@@ -26,6 +27,13 @@ public static class FixtureEndpoints
             .WithSummary("Gets all fixtures that are currently live")
             .Produces<IReadOnlyList<FixtureDto>>(StatusCodes.Status200OK);
 
+        group.MapGet("/{fixtureId:guid}/top-performers", GetTopPerformers)
+            .WithName("GetTopPerformers")
+            .WithSummary("Gets the top 4 run scorers in a fixture, by player and team")
+            .Produces<IReadOnlyList<TopPerformerDto>>(StatusCodes.Status200OK)
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status400BadRequest);
+
         return app;
     }
 
@@ -33,6 +41,30 @@ public static class FixtureEndpoints
     {
         var response = await sender.Send(new GetLiveFixturesQuery(), cancellationToken);
         return Results.Ok(response);
+    }
+
+    private static async Task<IResult> GetTopPerformers(
+        Guid fixtureId,
+        ISender sender,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var response = await sender.Send(new GetTopPerformersQuery(fixtureId), cancellationToken);
+            return Results.Ok(response);
+        }
+        catch (ValidationException ex)
+        {
+            var errors = ex.Errors
+                .GroupBy(e => e.PropertyName)
+                .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray());
+
+            return Results.ValidationProblem(errors);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Results.Problem(ex.Message, statusCode: StatusCodes.Status400BadRequest);
+        }
     }
 
     private static async Task<IResult> CreateFixture(
