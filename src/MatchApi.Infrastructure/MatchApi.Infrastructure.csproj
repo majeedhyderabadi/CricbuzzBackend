@@ -20,4 +20,8 @@
     <ProjectReference Include="..\MatchApi.Application\MatchApi.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="NewFolder\" />
+  </ItemGroup>
+
 </Project>
