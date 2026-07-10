@@ -1,6 +1,8 @@
 ﻿using MatchApi.Application.Features.Admins.Commands.ApproveAdmin;
 using MatchApi.Application.Features.Admins.Commands.GetAllAdmins;
+using MatchApi.Application.Features.Admins.Commands.Login;
 using MatchApi.Application.Features.Admins.Commands.RegisterAdmin;
+using MatchApi.Application.Features.Admins.Commands.Login;
 using MediatR;
 
 namespace MatchApi.Api.Endpoints;
@@ -29,6 +31,19 @@ public static class AdminEndpoints
             })
             .WithName("RegisterAdmin")
             .WithSummary("Registers a new admin user");
+
+        group.MapPost(
+    "/login",
+    async (
+        LoginCommand command,
+        ISender sender) =>
+    {
+        var result = await sender.Send(command);
+
+        return Results.Ok(result);
+    })
+    .WithName("LoginAdmin")
+    .WithSummary("Logs in an admin user.");
 
         group.MapGet(
            "/approval-requests",

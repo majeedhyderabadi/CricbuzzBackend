@@ -1,9 +1,11 @@
 using MatchApi.Application.Common.Interfaces;
 using MatchApi.Infrastructure.Persistence;
 using MatchApi.Infrastructure.Repositories;
+using MatchApi.Infrastructure.Security;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
 
 namespace MatchApi.Infrastructure;
 
@@ -24,7 +26,7 @@ public static class DependencyInjection
         services.AddScoped<ICommentaryRepository, CommentaryRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IAdminUserRepository, AdminUserRepository>();
-
+        services.AddScoped<IJwtProvider, JwtProvider>();
         return services;
     }
 }
