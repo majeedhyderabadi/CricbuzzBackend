@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿
 namespace MatchApi.Application.Features.Players.Commands.AddPlayers
 {
     public class AddPlayerResponse
@@ -11,5 +8,6 @@ namespace MatchApi.Application.Features.Players.Commands.AddPlayers
         public string PlayerName { get; set; } = string.Empty;
 
         public Guid TeamId { get; set; }
+        public Guid SportRoleId { get; set; }
     }
 }

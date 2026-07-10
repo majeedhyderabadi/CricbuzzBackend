@@ -12,10 +12,13 @@ public class FixtureConfiguration : IEntityTypeConfiguration<Fixture>
 
         builder.HasKey(f => f.Id);
 
-        builder.Property(f => f.Sport)
-            .IsRequired()
-            .HasConversion<string>()
-            .HasMaxLength(20);
+        builder.Property(f => f.SportId)
+            .IsRequired();
+
+        builder.HasOne(f => f.Sport)
+            .WithMany()
+            .HasForeignKey(f => f.SportId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(f => f.Status)
             .IsRequired()

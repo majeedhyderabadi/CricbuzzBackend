@@ -13,35 +13,28 @@ namespace MatchApi.Application.Features.Players.Commands.AddPlayers
         {
             _repository = repository;
         }
-        
 
         public async Task<AddPlayerResponse> Handle(
             AddPlayerCommand request,
             CancellationToken cancellationToken)
         {
-            try
+            var player = new Player
             {
-                var player = new Player
-                {
-                    Id = Guid.NewGuid(),
-                    TeamId = request.TeamId,
-                    Name = request.PlayerName,
-                    Role = request.Role
-                };
+                Id = Guid.NewGuid(),
+                TeamId = request.TeamId,
+                Name = request.PlayerName,
+                SportRoleId = request.SportRoleId
+            };
 
-                await _repository.AddAsync(player, cancellationToken);
+            await _repository.AddAsync(player, cancellationToken);
 
-                return new AddPlayerResponse
-                {
-                    Id = player.Id,
-                    TeamId = player.TeamId,
-                    PlayerName = player.Name
-                };
-            }
-            catch (Exception ex)
+            return new AddPlayerResponse
             {
-                throw;
-            }
+                Id = player.Id,
+                TeamId = player.TeamId,
+                PlayerName = player.Name,
+                SportRoleId = player.SportRoleId
+            };
         }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using MatchApi.Application.Features.Teams.Commands.CreateTeam;
+using MatchApi.Application.Features.Teams.Commands.DeleteTeam;
+using MatchApi.Application.Features.Teams.Commands.UpdateTeam;
 using MatchApi.Application.Features.Teams.Queries.GetTeams;
 using MediatR;
 
@@ -25,6 +27,16 @@ namespace MatchApi.Api.Endpoints
                 .Produces<List<GetTeamsResponse>>(StatusCodes.Status200OK)
                 .ProducesProblem(StatusCodes.Status500InternalServerError);
 
+            group.MapDelete("/{id:guid}", DeleteTeam)
+                .WithName("DeleteTeam")
+                .WithSummary("Delete the team")
+                .ProducesProblem(StatusCodes.Status500InternalServerError);
+
+            group.MapPut("/{id:guid}", UpdateTeam)
+                .WithName("UpdateTeam")
+                .WithSummary("Updates the team")
+                .ProducesProblem(StatusCodes.Status500InternalServerError);
+
             return app;
         }
 
@@ -43,7 +55,6 @@ namespace MatchApi.Api.Endpoints
                 return Results.Problem(ex.Message, statusCode: StatusCodes.Status400BadRequest);
             }
         }
-
         private static async Task<IResult> GetTeams(
             ISender sender,
             CancellationToken cancellationToken)
@@ -53,6 +64,33 @@ namespace MatchApi.Api.Endpoints
                 cancellationToken);
 
             return Results.Ok(response);
+        }
+        private static async Task<IResult> DeleteTeam(
+            Guid id,
+            ISender sender,
+            CancellationToken cancellationToken)
+        {
+            await sender.Send(
+                new DeleteTeamCommand(id),
+                cancellationToken);
+
+            return Results.NoContent();
+        }
+        private static async Task<IResult> UpdateTeam(
+            Guid id,
+            UpdateTeamCommand command,
+            ISender sender,
+            CancellationToken cancellationToken)
+        {
+            if (id != command.Id)
+                return Results.BadRequest("Route Id and Body Id must match.");
+
+            var updated = await sender.Send(command, cancellationToken);
+
+            if (!updated)
+                return Results.NotFound();
+
+            return Results.NoContent();
         }
     }
 }

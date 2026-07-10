@@ -18,12 +18,12 @@ public class CreateTeamCommandHandler : IRequestHandler<CreateTeamCommand, Creat
     {
         try
         {
-            var team = Team.Create(request.Name, request.Sport, request.ColorHex);
+            var team = Team.Create(request.Name, request.SportId, request.ColorHex);
             await _teamRepository.AddAsync(team, cancellationToken);
             return new CreateTeamResponse(
                 team.Id,
                 team.Name,
-                team.Sport.ToString(),
+                team.SportId,
                 team.ColorHex);
         }
         catch (Exception ex)

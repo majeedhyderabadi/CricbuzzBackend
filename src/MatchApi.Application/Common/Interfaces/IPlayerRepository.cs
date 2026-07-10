@@ -9,4 +9,6 @@ public interface IPlayerRepository
     Task<List<Player>> GetPlayersByTeamIdAsync(
      Guid teamId,
      CancellationToken cancellationToken);
+    Task DeletePlayerAsync(Guid teamId, CancellationToken cancellationToken);
+    Task UpdatePlayerAsync(Player request, CancellationToken cancellationToken);
 }

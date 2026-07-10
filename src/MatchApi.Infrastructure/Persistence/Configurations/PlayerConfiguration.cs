@@ -18,82 +18,86 @@ public class PlayerConfiguration : IEntityTypeConfiguration<Player>
             .IsRequired()
             .HasMaxLength(100);
 
-        builder.Property(p => p.Role)
-            .IsRequired()
-            .HasMaxLength(50);
+        builder.Property(p => p.TeamId)
+            .IsRequired();
+
+        builder.Property(p => p.SportRoleId)
+            .IsRequired();
+
+        builder.HasOne(p => p.Team)
+            .WithMany(t => t.Players)
+            .HasForeignKey(p => p.TeamId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasOne(p => p.SportRole)
+            .WithMany(r => r.Players)
+            .HasForeignKey(p => p.SportRoleId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasData(
             new
             {
                 Id = new Guid("33333333-3333-3333-3333-333333333331"),
                 Name = "Rohit Sharma",
-                Role = "Batter",
-                TeamId = TeamConfiguration.NVianStrikersId,
-                CreatedAtUtc = SeedCreatedAtUtc,
-                UpdatedAtUtc = (DateTime?)null
+                SportRoleId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                TeamId = new Guid("11111111-1111-1111-1111-111111111111"),
+                CreatedAtUtc = SeedCreatedAtUtc
             },
             new
             {
                 Id = new Guid("33333333-3333-3333-3333-333333333332"),
                 Name = "Jasprit B",
-                Role = "Bowler",
-                TeamId = TeamConfiguration.NVianStrikersId,
-                CreatedAtUtc = SeedCreatedAtUtc,
-                UpdatedAtUtc = (DateTime?)null
+                SportRoleId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                TeamId = new Guid("11111111-1111-1111-1111-111111111111"),
+                CreatedAtUtc = SeedCreatedAtUtc
             },
             new
             {
                 Id = new Guid("33333333-3333-3333-3333-333333333333"),
                 Name = "Hardik P",
-                Role = "All-rounder",
-                TeamId = TeamConfiguration.NVianStrikersId,
-                CreatedAtUtc = SeedCreatedAtUtc,
-                UpdatedAtUtc = (DateTime?)null
+                SportRoleId = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
+                TeamId = new Guid("11111111-1111-1111-1111-111111111111"),
+                CreatedAtUtc = SeedCreatedAtUtc
             },
             new
             {
                 Id = new Guid("44444444-4444-4444-4444-444444444441"),
                 Name = "Diallo",
-                Role = "Forward",
-                TeamId = TeamConfiguration.NVianFcId,
-                CreatedAtUtc = SeedCreatedAtUtc,
-                UpdatedAtUtc = (DateTime?)null
+                SportRoleId = new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"),
+                TeamId = new Guid("22222222-2222-2222-2222-222222222222"),
+                CreatedAtUtc = SeedCreatedAtUtc
             },
             new
             {
                 Id = new Guid("44444444-4444-4444-4444-444444444442"),
                 Name = "Okafor",
-                Role = "Midfielder",
-                TeamId = TeamConfiguration.NVianFcId,
-                CreatedAtUtc = SeedCreatedAtUtc,
-                UpdatedAtUtc = (DateTime?)null
+                SportRoleId = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd"),
+                TeamId = new Guid("22222222-2222-2222-2222-222222222222"),
+                CreatedAtUtc = SeedCreatedAtUtc
             },
             new
             {
                 Id = new Guid("55555555-5555-5555-5555-555555555551"),
                 Name = "Abhishek S",
-                Role = "Batter",
-                TeamId = TeamConfiguration.HyderabadId,
-                CreatedAtUtc = SeedCreatedAtUtc,
-                UpdatedAtUtc = (DateTime?)null
+                SportRoleId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                TeamId = new Guid("22222222-2222-2222-2222-222222222222"),
+                CreatedAtUtc = SeedCreatedAtUtc
             },
             new
             {
                 Id = new Guid("55555555-5555-5555-5555-555555555552"),
                 Name = "Bhuvneshwar K",
-                Role = "Bowler",
-                TeamId = TeamConfiguration.HyderabadId,
-                CreatedAtUtc = SeedCreatedAtUtc,
-                UpdatedAtUtc = (DateTime?)null
+                SportRoleId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                TeamId = new Guid("55555555-5555-5555-5555-555555555555"),
+                CreatedAtUtc = SeedCreatedAtUtc
             },
             new
             {
                 Id = new Guid("55555555-5555-5555-5555-555555555553"),
                 Name = "Nitish R",
-                Role = "All-rounder",
-                TeamId = TeamConfiguration.HyderabadId,
-                CreatedAtUtc = SeedCreatedAtUtc,
-                UpdatedAtUtc = (DateTime?)null
+                SportRoleId = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
+                TeamId = new Guid("55555555-5555-5555-5555-555555555555"),
+                CreatedAtUtc = SeedCreatedAtUtc
             });
     }
 }

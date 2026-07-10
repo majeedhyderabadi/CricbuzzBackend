@@ -2,15 +2,12 @@ using MatchApi.Domain.Entities;
 using MatchApi.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Reflection.Emit;
 
 namespace MatchApi.Infrastructure.Persistence.Configurations;
 
 public class TeamConfiguration : IEntityTypeConfiguration<Team>
 {
-    public static readonly Guid NVianStrikersId = new("11111111-1111-1111-1111-111111111111");
-    public static readonly Guid NVianFcId = new("22222222-2222-2222-2222-222222222222");
-    public static readonly Guid HyderabadId = new("55555555-5555-5555-5555-555555555555");
-
     private static readonly DateTime SeedCreatedAtUtc = new(2026, 7, 1, 0, 0, 0, DateTimeKind.Utc);
 
     public void Configure(EntityTypeBuilder<Team> builder)
@@ -23,14 +20,17 @@ public class TeamConfiguration : IEntityTypeConfiguration<Team>
             .IsRequired()
             .HasMaxLength(100);
 
-        builder.Property(t => t.Sport)
-            .IsRequired()
-            .HasConversion<string>()
-            .HasMaxLength(20);
-
         builder.Property(t => t.ColorHex)
             .IsRequired()
             .HasMaxLength(20);
+
+        builder.Property(t => t.SportId)
+            .IsRequired();
+
+        builder.HasOne(t => t.Sport)
+            .WithMany(s => s.Teams)
+            .HasForeignKey(t => t.SportId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasMany(t => t.Players)
             .WithOne(p => p.Team)
@@ -40,30 +40,27 @@ public class TeamConfiguration : IEntityTypeConfiguration<Team>
         builder.HasData(
             new
             {
-                Id = NVianStrikersId,
+                Id = new Guid("11111111-1111-1111-1111-111111111111"),
                 Name = "NVian Strikers",
-                Sport = Sport.Cricket,
+                SportId = new Guid("66666666-6666-6666-6666-666666666666"),
                 ColorHex = "#8B5CF6",
-                CreatedAtUtc = SeedCreatedAtUtc,
-                UpdatedAtUtc = (DateTime?)null
+                CreatedAtUtc = SeedCreatedAtUtc
             },
             new
             {
-                Id = NVianFcId,
+                Id = new Guid("22222222-2222-2222-2222-222222222222"),
                 Name = "NVian FC",
-                Sport = Sport.Football,
+                SportId = new Guid("22222222-2222-2222-2222-222222222222"),
                 ColorHex = "#3B82F6",
-                CreatedAtUtc = SeedCreatedAtUtc,
-                UpdatedAtUtc = (DateTime?)null
+                CreatedAtUtc = SeedCreatedAtUtc
             },
             new
             {
-                Id = HyderabadId,
+                Id = new Guid("55555555-5555-5555-5555-555555555555"),
                 Name = "Hyderabad",
-                Sport = Sport.Cricket,
+                SportId = new Guid("11111111-1111-1111-1111-111111111111"),
                 ColorHex = "#F97316",
-                CreatedAtUtc = SeedCreatedAtUtc,
-                UpdatedAtUtc = (DateTime?)null
+                CreatedAtUtc = SeedCreatedAtUtc
             });
     }
 }
