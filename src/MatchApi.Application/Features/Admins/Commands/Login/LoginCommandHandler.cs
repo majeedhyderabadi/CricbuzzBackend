@@ -47,6 +47,8 @@ public class LoginCommandHandler
             throw new InvalidOperationException("Invalid email or password.");
         }
 
+        var role = admin.IsSuperAdmin ? "SuperAdmin" : admin.IsApproved ? "Admin" : throw new InvalidOperationException("User does not have a valid admin role.");
+
         var token = _jwtProvider.GenerateToken(
             admin.Id,
             admin.Email);
@@ -58,7 +60,7 @@ public class LoginCommandHandler
             FirstName = admin.FirstName,
             LastName = admin.LastName,
             Email = admin.Email,
-            Role = "Admin"
+            Role = role
         };
     }
 }
