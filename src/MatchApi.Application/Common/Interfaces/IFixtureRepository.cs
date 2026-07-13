@@ -7,4 +7,6 @@ public interface IFixtureRepository
     Task AddAsync(Fixture fixture, CancellationToken cancellationToken);
 
     Task<Fixture?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+
+    Task<IReadOnlyList<Fixture>> GetLiveAsync(CancellationToken cancellationToken);
 }

@@ -11,6 +11,7 @@ public class AdminUser : BaseEntity
     public string PasswordHash { get; set; } = string.Empty;
     public string PasswordSalt { get; set; } = string.Empty;
     public bool IsApproved { get; set; } = false;
+    public bool IsSuperAdmin { get; set; } = false;
 
 
     public static AdminUser Create(string firstName, string lastName, string email, string passwordHash, string passwordSalt)
