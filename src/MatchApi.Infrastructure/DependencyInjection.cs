@@ -2,6 +2,7 @@ using MatchApi.Application.Common.Interfaces;
 using MatchApi.Infrastructure.Persistence;
 using MatchApi.Infrastructure.Repositories;
 using MatchApi.Infrastructure.Security;
+using MatchApi.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,6 +30,11 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IAdminUserRepository, AdminUserRepository>();
         services.AddScoped<IJwtProvider, JwtProvider>();
+        services.AddHttpClient<ICricApiService, CricApiService>(client =>
+        {
+            client.BaseAddress = new Uri(
+                configuration["CricApi:BaseUrl"]!);
+        });
         return services;
     }
 }
