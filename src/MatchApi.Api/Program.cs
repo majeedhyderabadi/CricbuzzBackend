@@ -104,6 +104,7 @@ app.MapFixtureEndpoints();
 app.MapTeamsEndpoints();
 app.MapPlayerEndpoints();
 app.MapCommentaryEndpoints();
+app.MapSportsEndpoints();
 
 app.MapHub<CommentaryHub>("/hubs/commentary");
 

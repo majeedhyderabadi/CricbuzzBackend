@@ -81,8 +81,8 @@ namespace MatchApi.Infrastructure.Migrations
 
                     b.Property<string>("Action")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
 
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("datetime2");
@@ -91,16 +91,16 @@ namespace MatchApi.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Note")
-                        .HasMaxLength(280)
-                        .HasColumnType("nvarchar(280)");
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<Guid?>("PlayerId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Side")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<DateTime?>("UpdatedAtUtc")
                         .HasColumnType("datetime2");
@@ -132,10 +132,8 @@ namespace MatchApi.Infrastructure.Migrations
                     b.Property<DateTime>("ScheduledAtUtc")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Sport")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                    b.Property<Guid>("SportId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -150,6 +148,8 @@ namespace MatchApi.Infrastructure.Migrations
                     b.HasIndex("AwayTeamId");
 
                     b.HasIndex("HomeTeamId");
+
+                    b.HasIndex("SportId");
 
                     b.ToTable("Fixtures", (string)null);
                 });
@@ -168,10 +168,8 @@ namespace MatchApi.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    b.Property<Guid>("SportRoleId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("TeamId")
                         .HasColumnType("uniqueidentifier");
@@ -180,6 +178,8 @@ namespace MatchApi.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("SportRoleId");
 
                     b.HasIndex("TeamId");
 
@@ -191,7 +191,7 @@ namespace MatchApi.Infrastructure.Migrations
                             Id = new Guid("33333333-3333-3333-3333-333333333331"),
                             CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Rohit Sharma",
-                            Role = "Batter",
+                            SportRoleId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
                             TeamId = new Guid("11111111-1111-1111-1111-111111111111")
                         },
                         new
@@ -199,7 +199,7 @@ namespace MatchApi.Infrastructure.Migrations
                             Id = new Guid("33333333-3333-3333-3333-333333333332"),
                             CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Jasprit B",
-                            Role = "Bowler",
+                            SportRoleId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
                             TeamId = new Guid("11111111-1111-1111-1111-111111111111")
                         },
                         new
@@ -207,7 +207,7 @@ namespace MatchApi.Infrastructure.Migrations
                             Id = new Guid("33333333-3333-3333-3333-333333333333"),
                             CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Hardik P",
-                            Role = "All-rounder",
+                            SportRoleId = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
                             TeamId = new Guid("11111111-1111-1111-1111-111111111111")
                         },
                         new
@@ -215,7 +215,7 @@ namespace MatchApi.Infrastructure.Migrations
                             Id = new Guid("44444444-4444-4444-4444-444444444441"),
                             CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Diallo",
-                            Role = "Forward",
+                            SportRoleId = new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"),
                             TeamId = new Guid("22222222-2222-2222-2222-222222222222")
                         },
                         new
@@ -223,7 +223,7 @@ namespace MatchApi.Infrastructure.Migrations
                             Id = new Guid("44444444-4444-4444-4444-444444444442"),
                             CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Okafor",
-                            Role = "Midfielder",
+                            SportRoleId = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd"),
                             TeamId = new Guid("22222222-2222-2222-2222-222222222222")
                         },
                         new
@@ -231,15 +231,15 @@ namespace MatchApi.Infrastructure.Migrations
                             Id = new Guid("55555555-5555-5555-5555-555555555551"),
                             CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Abhishek S",
-                            Role = "Batter",
-                            TeamId = new Guid("55555555-5555-5555-5555-555555555555")
+                            SportRoleId = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            TeamId = new Guid("22222222-2222-2222-2222-222222222222")
                         },
                         new
                         {
                             Id = new Guid("55555555-5555-5555-5555-555555555552"),
                             CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Bhuvneshwar K",
-                            Role = "Bowler",
+                            SportRoleId = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
                             TeamId = new Guid("55555555-5555-5555-5555-555555555555")
                         },
                         new
@@ -247,8 +247,137 @@ namespace MatchApi.Infrastructure.Migrations
                             Id = new Guid("55555555-5555-5555-5555-555555555553"),
                             CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Nitish R",
-                            Role = "All-rounder",
+                            SportRoleId = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
                             TeamId = new Guid("55555555-5555-5555-5555-555555555555")
+                        });
+                });
+
+            modelBuilder.Entity("MatchApi.Domain.Entities.Sport", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Sports", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
+                            CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Description",
+                            Name = "Cricket"
+                        },
+                        new
+                        {
+                            Id = new Guid("22222222-2222-2222-2222-222222222222"),
+                            CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Description",
+                            Name = "Football"
+                        });
+                });
+
+            modelBuilder.Entity("MatchApi.Domain.Entities.SportRole", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<string>("RoleName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<Guid>("SportId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SportId", "RoleName")
+                        .IsUnique();
+
+                    b.ToTable("SportRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                            CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Description",
+                            RoleName = "Batter",
+                            SportId = new Guid("11111111-1111-1111-1111-111111111111")
+                        },
+                        new
+                        {
+                            Id = new Guid("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                            CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Description",
+                            RoleName = "Bowler",
+                            SportId = new Guid("11111111-1111-1111-1111-111111111111")
+                        },
+                        new
+                        {
+                            Id = new Guid("cccccccc-cccc-cccc-cccc-cccccccccccc"),
+                            CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Description",
+                            RoleName = "All-rounder",
+                            SportId = new Guid("11111111-1111-1111-1111-111111111111")
+                        },
+                        new
+                        {
+                            Id = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd"),
+                            CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Description",
+                            RoleName = "Goalkeeper",
+                            SportId = new Guid("22222222-2222-2222-2222-222222222222")
+                        },
+                        new
+                        {
+                            Id = new Guid("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"),
+                            CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Description",
+                            RoleName = "Defender",
+                            SportId = new Guid("22222222-2222-2222-2222-222222222222")
+                        },
+                        new
+                        {
+                            Id = new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"),
+                            CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Description",
+                            RoleName = "Forward",
+                            SportId = new Guid("22222222-2222-2222-2222-222222222222")
                         });
                 });
 
@@ -271,15 +400,15 @@ namespace MatchApi.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("Sport")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                    b.Property<Guid>("SportId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedAtUtc")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("SportId");
 
                     b.ToTable("Teams", (string)null);
 
@@ -290,7 +419,7 @@ namespace MatchApi.Infrastructure.Migrations
                             ColorHex = "#8B5CF6",
                             CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "NVian Strikers",
-                            Sport = "Cricket"
+                            SportId = new Guid("66666666-6666-6666-6666-666666666666")
                         },
                         new
                         {
@@ -298,7 +427,7 @@ namespace MatchApi.Infrastructure.Migrations
                             ColorHex = "#3B82F6",
                             CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "NVian FC",
-                            Sport = "Football"
+                            SportId = new Guid("22222222-2222-2222-2222-222222222222")
                         },
                         new
                         {
@@ -306,7 +435,7 @@ namespace MatchApi.Infrastructure.Migrations
                             ColorHex = "#F97316",
                             CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Hyderabad",
-                            Sport = "Cricket"
+                            SportId = new Guid("11111111-1111-1111-1111-111111111111")
                         });
                 });
 
@@ -341,6 +470,15 @@ namespace MatchApi.Infrastructure.Migrations
                         .HasForeignKey("HomeTeamId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+
+                    b.HasOne("MatchApi.Domain.Entities.Sport", "Sport")
+                        .WithMany()
+                        .HasForeignKey("SportId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+
 
                     b.OwnsOne("MatchApi.Domain.Common.Score", "AwayScore", b1 =>
                         {
@@ -393,22 +531,66 @@ namespace MatchApi.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("HomeTeam");
+
+                    b.Navigation("Sport");
                 });
 
             modelBuilder.Entity("MatchApi.Domain.Entities.Player", b =>
                 {
+                    b.HasOne("MatchApi.Domain.Entities.SportRole", "SportRole")
+                        .WithMany("Players")
+                        .HasForeignKey("SportRoleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("MatchApi.Domain.Entities.Team", "Team")
                         .WithMany("Players")
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("SportRole");
+
                     b.Navigation("Team");
+                });
+
+            modelBuilder.Entity("MatchApi.Domain.Entities.SportRole", b =>
+                {
+                    b.HasOne("MatchApi.Domain.Entities.Sport", "Sport")
+                        .WithMany("Roles")
+                        .HasForeignKey("SportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Sport");
+                });
+
+            modelBuilder.Entity("MatchApi.Domain.Entities.Team", b =>
+                {
+                    b.HasOne("MatchApi.Domain.Entities.Sport", "Sport")
+                        .WithMany("Teams")
+                        .HasForeignKey("SportId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Sport");
                 });
 
             modelBuilder.Entity("MatchApi.Domain.Entities.Fixture", b =>
                 {
                     b.Navigation("CommentaryEntries");
+                });
+
+            modelBuilder.Entity("MatchApi.Domain.Entities.Sport", b =>
+                {
+                    b.Navigation("Roles");
+
+                    b.Navigation("Teams");
+                });
+
+            modelBuilder.Entity("MatchApi.Domain.Entities.SportRole", b =>
+                {
+                    b.Navigation("Players");
                 });
 
             modelBuilder.Entity("MatchApi.Domain.Entities.Team", b =>
