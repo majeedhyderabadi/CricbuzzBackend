@@ -1,8 +1,5 @@
 ﻿using MatchApi.Application.Common.Interfaces;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace MatchApi.Application.Features.Players.Queries.GetPlayers
 {
@@ -29,7 +26,12 @@ namespace MatchApi.Application.Features.Players.Queries.GetPlayers
                 Id = player.Id,
                 TeamId = player.TeamId,
                 PlayerName = player.Name,
-                Role = player.Role
+                SportRoleId = player.SportRoleId,
+                SportRole = new SportRoleResponse
+                {
+                    RoleName = player.SportRole.RoleName,
+                    Description = player.SportRole.Description
+                },
             }).ToList();
         }
     }

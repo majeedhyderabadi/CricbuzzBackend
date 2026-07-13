@@ -6,6 +6,6 @@ public record CreateFixtureResponse(
     string HomeTeamName,
     Guid AwayTeamId,
     string AwayTeamName,
-    string Sport,
+    Guid SportId,
     DateTime ScheduledAtUtc,
     string Status);

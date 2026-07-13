@@ -39,7 +39,7 @@ public class CreateFixtureCommandHandler : IRequestHandler<CreateFixtureCommand,
             homeTeam.Name,
             awayTeam.Id,
             awayTeam.Name,
-            fixture.Sport.ToString(),
+            fixture.SportId,
             fixture.ScheduledAtUtc,
             fixture.Status.ToString());
     }

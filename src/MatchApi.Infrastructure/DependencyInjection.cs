@@ -1,9 +1,12 @@
 using MatchApi.Application.Common.Interfaces;
 using MatchApi.Infrastructure.Persistence;
 using MatchApi.Infrastructure.Repositories;
+using MatchApi.Infrastructure.Security;
+using MatchApi.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
 
 namespace MatchApi.Infrastructure;
 
@@ -20,11 +23,18 @@ public static class DependencyInjection
 
         services.AddScoped<ITeamRepository, TeamRepository>();
         services.AddScoped<IFixtureRepository, FixtureRepository>();
-        services.AddScoped<IPlayerRepository, PlayerRepository>();
+        services.AddScoped<IPlayerRepository, PlayerRepository>(); 
+        services.AddScoped<ISportRepository, SportRepository>();
+        services.AddScoped<ISportRoleRepository, SportRoleRepository>();
         services.AddScoped<ICommentaryRepository, CommentaryRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IAdminUserRepository, AdminUserRepository>();
-
+        services.AddScoped<IJwtProvider, JwtProvider>();
+        services.AddHttpClient<ICricApiService, CricApiService>(client =>
+        {
+            client.BaseAddress = new Uri(
+                configuration["CricApi:BaseUrl"]!);
+        });
         return services;
     }
 }

@@ -13,18 +13,14 @@ public class ApplicationDbContext : DbContext
     public DbSet<Team> Teams => Set<Team>();
     public DbSet<Player> Players => Set<Player>();
     public DbSet<Fixture> Fixtures => Set<Fixture>();
+    public DbSet<Sport> Sports => Set<Sport>();
+    public DbSet<SportRole> SportRoles => Set<SportRole>();
     public DbSet<CommentaryEntry> CommentaryEntries => Set<CommentaryEntry>();
     public DbSet<AdminUser> AdminUsers => Set<AdminUser>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
-        modelBuilder.Entity<Team>()
-         .HasMany(t => t.Players)
-         .WithOne(p => p.Team)
-         .HasForeignKey(p => p.TeamId)
-         .OnDelete(DeleteBehavior.Cascade);
 
         base.OnModelCreating(modelBuilder);
     }

@@ -7,6 +7,9 @@ using MatchApi.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.OpenApi;
 using System.Reflection;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +34,31 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod()
             .AllowCredentials());
 });
+
+builder.Services.AddAuthentication(
+    JwtBearerDefaults.AuthenticationScheme)
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters =
+        new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+
+            IssuerSigningKey =
+                new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(
+                        builder.Configuration["Jwt:Key"]!))
+        };
+});
+
+builder.Services.AddAuthorization();
 
 builder.Services.AddEndpointsApiExplorer();
 
@@ -62,7 +90,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "MatchApi v1");
-        options.RoutePrefix = "swagger"; // UI served at /swagger
+        options.RoutePrefix = "swagger"; // UI served at /swaggerAdmin
     });
 }
 
@@ -76,6 +104,8 @@ app.MapFixtureEndpoints();
 app.MapTeamsEndpoints();
 app.MapPlayerEndpoints();
 app.MapCommentaryEndpoints();
+app.MapSportsEndpoints();
+app.MapCurrentMatchesEndpoints();
 
 app.MapHub<CommentaryHub>("/hubs/commentary");
 

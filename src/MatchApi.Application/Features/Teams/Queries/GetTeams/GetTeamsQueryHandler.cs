@@ -24,12 +24,18 @@ namespace MatchApi.Application.Features.Teams.Queries.GetTeams
             {
                 Id = team.Id,
                 TeamName = team.Name,
-                Sport = team.Sport.ToString(),
+                SportId = team.SportId,
+                Sport = new GetSportResponse() { 
+                Name = team.Sport.Name,
+                Description = team.Sport.Description
+                },
                 Color = team.ColorHex,
-                players = team.Players.Select(player => new PlayerDTO
+                players = team.Players.Select(player => new GetPlayerResponse() 
                 {
-                    Role = player.Role,
-                    Name = player.Name
+                    Role = player.SportRole.RoleName,
+                    PlayerName = player.Name,
+                    PlayerId = player.Id,
+                    RoleId = player.SportRoleId
                 }).ToList()
             }).ToList();
         }

@@ -1,10 +1,8 @@
-﻿using MatchApi.Application.Features.Teams.Commands.CreateTeam;
-using MatchApi.Domain.Enums;
-using MediatR;
+﻿using MediatR;
 
 namespace MatchApi.Application.Features.Teams.Commands.CreateTeam;
 
 public record CreateTeamCommand(
     string Name,
-    Sport Sport,
+    Guid SportId,
     string ColorHex) : IRequest<CreateTeamResponse>;

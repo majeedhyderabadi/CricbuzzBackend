@@ -33,8 +33,39 @@ public class PlayerRepository : IPlayerRepository
     CancellationToken cancellationToken)
     {
         return await _context.Players
-            .Where(x => x.TeamId == teamId)
+            .Where(x => x.TeamId == teamId).Include(x => x.SportRole)
             .OrderBy(x => x.Name)
             .ToListAsync(cancellationToken);
+    }
+    public async Task DeletePlayerAsync(Guid teamId, CancellationToken cancellationToken)
+    {
+        var player = await _context.Players
+               .FirstOrDefaultAsync(
+                   t => t.Id == teamId,
+                   cancellationToken);
+
+        if (player == null)
+            throw new KeyNotFoundException("Team not found.");
+
+        _context.Players.Remove(player);
+
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+    public async Task UpdatePlayerAsync(Player request, CancellationToken cancellationToken)
+    {
+        var playerToUpdate = await _context.Players
+             .FirstOrDefaultAsync(
+                 t => t.Id == request.Id,
+                 cancellationToken);
+
+        if (playerToUpdate == null)
+            throw new KeyNotFoundException("Team not found.");
+
+        playerToUpdate.Name = request.Name;
+        playerToUpdate.TeamId = request.TeamId;
+        playerToUpdate.SportRoleId = request.SportRoleId;
+
+
+        await _context.SaveChangesAsync(cancellationToken);
     }
 }

@@ -6,13 +6,16 @@ namespace MatchApi.Domain.Entities;
 public class Fixture : BaseEntity
 {
     public Guid HomeTeamId { get; set; }
-    public Team? HomeTeam { get; set; }
+    public Team HomeTeam { get; set; } = null!;
 
     public Guid AwayTeamId { get; set; }
-    public Team? AwayTeam { get; set; }
+    public Team AwayTeam { get; set; } = null!;
 
-    public Sport Sport { get; set; }
+    public Guid SportId { get; set; }
+    public Sport Sport { get; set; } = null!;
+
     public DateTime ScheduledAtUtc { get; set; }
+
     public MatchStatus Status { get; set; } = MatchStatus.Scheduled;
 
     public Score HomeScore { get; set; } = null!;
@@ -23,32 +26,26 @@ public class Fixture : BaseEntity
     public static Fixture Create(Team homeTeam, Team awayTeam, DateTime scheduledAtUtc)
     {
         if (homeTeam.Id == awayTeam.Id)
-        {
             throw new InvalidOperationException("A team cannot play against itself.");
-        }
 
-        if (homeTeam.Sport != awayTeam.Sport)
-        {
+        if (homeTeam.SportId != awayTeam.SportId)
             throw new InvalidOperationException("Both teams must play the same sport.");
-        }
-
-        var tracksWickets = homeTeam.Sport == Sport.Cricket;
-
+      //  var tracksWickets = homeTeam.Sport == Sport.Cricket;
         return new Fixture
         {
             HomeTeamId = homeTeam.Id,
             AwayTeamId = awayTeam.Id,
-            Sport = homeTeam.Sport,
+            SportId = homeTeam.SportId,
             ScheduledAtUtc = scheduledAtUtc,
             Status = MatchStatus.Scheduled,
-            HomeScore = Score.Zero(tracksWickets),
-            AwayScore = Score.Zero(tracksWickets)
+            //HomeScore = Score.Zero(tracksWickets),
+            //AwayScore = Score.Zero(tracksWickets)
         };
     }
 
     public CommentaryEntry AddCommentary(FixtureSide side, Guid playerId, CommentaryAction action, string? note)
     {
-        if (Sport != Sport.Cricket)
+        if (Sport.Name != Enums.Sport.Cricket.ToString())
         {
             throw new InvalidOperationException("Ball-by-ball commentary is only supported for cricket fixtures.");
         }
@@ -64,7 +61,7 @@ public class Fixture : BaseEntity
     // and it still leaves a trail in the commentary feed per the "also logs a commentary entry" UX.
     public CommentaryEntry AdjustScore(FixtureSide side, int runsDelta, int wicketsDelta, string? note = null)
     {
-        if (wicketsDelta != 0 && Sport != Sport.Cricket)
+        if (wicketsDelta != 0 && Sport.Name != Enums.Sport.Cricket.ToString())
         {
             throw new InvalidOperationException("Wickets can only be adjusted for cricket fixtures.");
         }

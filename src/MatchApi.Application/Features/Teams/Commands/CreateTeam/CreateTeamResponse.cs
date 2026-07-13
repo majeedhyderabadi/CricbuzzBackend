@@ -2,5 +2,5 @@
 public record CreateTeamResponse(
     Guid Id,
     string Name,
-    string Sport,
+    Guid SportId,
     string ColorHex);
