@@ -24,7 +24,7 @@ builder.Services.AddScoped<ICommentaryBroadcaster, SignalRCommentaryBroadcaster>
 
 const string ReactClientCorsPolicy = "ReactClient";
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
-    ?? new[] { "http://localhost:5174" };
+    ?? new[] { "http://localhost:5173" };
 
 builder.Services.AddCors(options =>
 {

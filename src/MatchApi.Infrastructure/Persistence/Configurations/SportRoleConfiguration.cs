@@ -85,11 +85,19 @@ public class SportRoleConfiguration : IEntityTypeConfiguration<SportRole>
                 CreatedAtUtc = SeedCreatedAtUtc,
                 Description = "Description"
             },
-            new 
+            new
             {
                 Id = new Guid("ffffffff-ffff-ffff-ffff-ffffffffffff"),
                 SportId = new Guid("22222222-2222-2222-2222-222222222222"),
                 RoleName = "Forward",
+                CreatedAtUtc = SeedCreatedAtUtc,
+                Description = "Description"
+            },
+            new
+            {
+                Id = new Guid("12121212-1212-1212-1212-121212121212"),
+                SportId = new Guid("22222222-2222-2222-2222-222222222222"),
+                RoleName = "Midfielder",
                 CreatedAtUtc = SeedCreatedAtUtc,
                 Description = "Description"
             }
