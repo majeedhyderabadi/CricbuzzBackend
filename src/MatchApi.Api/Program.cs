@@ -90,7 +90,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "MatchApi v1");
-        options.RoutePrefix = "swagger"; // UI served at /swagger
+        options.RoutePrefix = "swagger"; // UI served at /swaggerAdmin
     });
 }
 
@@ -105,6 +105,7 @@ app.MapTeamsEndpoints();
 app.MapPlayerEndpoints();
 app.MapCommentaryEndpoints();
 app.MapSportsEndpoints();
+app.MapCurrentMatchesEndpoints();
 
 app.MapHub<CommentaryHub>("/hubs/commentary");
 
