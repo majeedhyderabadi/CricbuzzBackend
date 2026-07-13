@@ -42,7 +42,7 @@ public class TeamConfiguration : IEntityTypeConfiguration<Team>
             {
                 Id = new Guid("11111111-1111-1111-1111-111111111111"),
                 Name = "NVian Strikers",
-                SportId = new Guid("66666666-6666-6666-6666-666666666666"),
+                SportId = new Guid("11111111-1111-1111-1111-111111111111"),
                 ColorHex = "#8B5CF6",
                 CreatedAtUtc = SeedCreatedAtUtc
             },

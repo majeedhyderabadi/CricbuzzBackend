@@ -24,7 +24,9 @@ public class TeamRepository : ITeamRepository
     }
     public Task<Team?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return _context.Teams.FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
+        return _context.Teams
+            .Include(t => t.Sport)
+            .FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
     }
     public async Task<List<Team>> GetTeamsAsync(CancellationToken cancellationToken)
     {

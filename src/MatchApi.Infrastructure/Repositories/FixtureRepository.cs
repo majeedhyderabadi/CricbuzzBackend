@@ -31,6 +31,7 @@ public class FixtureRepository : IFixtureRepository
             .AsNoTracking()
             .Include(f => f.HomeTeam)
             .Include(f => f.AwayTeam)
+            .Include(f => f.Sport)
             .Where(f => f.Status == MatchStatus.Live)
             .OrderBy(f => f.ScheduledAtUtc)
             .ToListAsync(cancellationToken);

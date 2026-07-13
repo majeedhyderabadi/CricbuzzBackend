@@ -71,7 +71,7 @@ public class PlayerConfiguration : IEntityTypeConfiguration<Player>
             {
                 Id = new Guid("44444444-4444-4444-4444-444444444442"),
                 Name = "Okafor",
-                SportRoleId = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd"),
+                SportRoleId = new Guid("12121212-1212-1212-1212-121212121212"),
                 TeamId = new Guid("22222222-2222-2222-2222-222222222222"),
                 CreatedAtUtc = SeedCreatedAtUtc
             },

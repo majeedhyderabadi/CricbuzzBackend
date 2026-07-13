@@ -30,7 +30,9 @@ public class Fixture : BaseEntity
 
         if (homeTeam.SportId != awayTeam.SportId)
             throw new InvalidOperationException("Both teams must play the same sport.");
-      //  var tracksWickets = homeTeam.Sport == Sport.Cricket;
+
+        var tracksWickets = homeTeam.Sport?.Name == "Cricket";
+
         return new Fixture
         {
             HomeTeamId = homeTeam.Id,
@@ -38,8 +40,8 @@ public class Fixture : BaseEntity
             SportId = homeTeam.SportId,
             ScheduledAtUtc = scheduledAtUtc,
             Status = MatchStatus.Scheduled,
-            //HomeScore = Score.Zero(tracksWickets),
-            //AwayScore = Score.Zero(tracksWickets)
+            HomeScore = Score.Zero(tracksWickets),
+            AwayScore = Score.Zero(tracksWickets)
         };
     }
 
