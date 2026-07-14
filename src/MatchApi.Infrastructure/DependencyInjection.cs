@@ -30,11 +30,32 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IAdminUserRepository, AdminUserRepository>();
         services.AddScoped<IJwtProvider, JwtProvider>();
+
         services.AddHttpClient<ICricApiService, CricApiService>(client =>
         {
             client.BaseAddress = new Uri(
                 configuration["CricApi:BaseUrl"]!);
         });
+
+        services.AddHttpClient<ICricbuzzService, CricApiService>(client =>
+        {
+            client.BaseAddress = new Uri("https://www.cricbuzz.com/");
+
+            client.DefaultRequestHeaders.UserAgent.ParseAdd(
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
+                "AppleWebKit/537.36 Chrome/150.0.0.0 Safari/537.36");
+        });
+
+
+        services.AddHttpClient<ICricbuzzCommentaryService, CricbuzzCommentaryService>(
+    client =>
+    {
+        client.BaseAddress = new Uri("https://www.cricbuzz.com/");
+
+        client.DefaultRequestHeaders.UserAgent.ParseAdd(
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
+            "AppleWebKit/537.36 Chrome/150.0.0.0 Safari/537.36");
+    });
         return services;
     }
 }
