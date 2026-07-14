@@ -1,6 +1,7 @@
 ﻿using MatchApi.Application.Features.ExternalMatches.Queries;
-using MatchApi.Application.Features.ExternalMatches.Queries.GetMatchDetails;
 using MatchApi.Application.Features.ExternalMatches.Queries;
+using MatchApi.Application.Features.ExternalMatches.Queries.GetCricbuzzScorecard;
+using MatchApi.Application.Features.ExternalMatches.Queries.GetMatchDetails;
 using MediatR;
 
 namespace MatchApi.Api.Endpoints;
@@ -61,6 +62,24 @@ public static class CurrentMatchesEndpoints
 
             return Results.Ok(result);
         });
+
+        group.MapGet(
+    "/cricbuzz/{matchId:long}/scorecard",
+    async (
+        long matchId,
+        ISender sender,
+        CancellationToken cancellationToken) =>
+    {
+        var result = await sender.Send(
+            new GetCricbuzzScorecardQuery(matchId),
+            cancellationToken);
+
+        return result is null
+            ? Results.NotFound()
+            : Results.Ok(result);
+    });
+
+
 
         return app;
     }
