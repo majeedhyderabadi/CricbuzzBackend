@@ -1,5 +1,6 @@
 ﻿using MatchApi.Application.Features.ExternalMatches.Queries;
 using MatchApi.Application.Features.ExternalMatches.Queries.GetMatchDetails;
+using MatchApi.Application.Features.ExternalMatches.Queries;
 using MediatR;
 
 namespace MatchApi.Api.Endpoints;
@@ -11,6 +12,7 @@ public static class CurrentMatchesEndpoints
     {
         var group = app.MapGroup("/api/matches");
 
+        // Existing CricData - Current Matches
         group.MapGet("/current", async (
             int offset,
             ISender sender,
@@ -23,6 +25,7 @@ public static class CurrentMatchesEndpoints
             return Results.Ok(result);
         });
 
+        // Existing CricData - Match Details
         group.MapGet("/{matchId}", async (
             string matchId,
             ISender sender,
@@ -35,7 +38,30 @@ public static class CurrentMatchesEndpoints
             return Results.Ok(result);
         });
 
-        return app;
+        // Cricbuzz - Current Matches
+        group.MapGet("/cricbuzz/current", async (
+            ISender sender,
+            CancellationToken cancellationToken) =>
+        {
+            var result = await sender.Send(
+                new GetCricbuzzMatchesQuery(),
+                cancellationToken);
 
+            return Results.Ok(result);
+        });
+
+        group.MapGet("/cricbuzz/{matchId}/info", async (
+    long matchId,
+    ISender sender,
+    CancellationToken cancellationToken) =>
+        {
+            var result = await sender.Send(
+                new GetCricbuzzMatchInfoQuery(matchId),
+                cancellationToken);
+
+            return Results.Ok(result);
+        });
+
+        return app;
     }
 }

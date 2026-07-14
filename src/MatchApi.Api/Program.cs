@@ -4,12 +4,14 @@ using MatchApi.Api.Realtime;
 using MatchApi.Application;
 using MatchApi.Application.Common.Interfaces;
 using MatchApi.Infrastructure;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using System.Reflection;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -106,7 +108,40 @@ app.MapPlayerEndpoints();
 app.MapCommentaryEndpoints();
 app.MapSportsEndpoints();
 app.MapCurrentMatchesEndpoints();
+app.MapLiveCommentaryEndpoints();
 
+//app.MapGet("/test-cricbuzz", async () =>
+//{
+//    using var client = new HttpClient();
+
+//    client.DefaultRequestHeaders.UserAgent.ParseAdd(
+//        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/150.0.0.0 Safari/537.36");
+
+//    var url =
+//        "https://www.cricbuzz.com/live-cricket-full-commentary/129519/engw-vs-indw-one-off-test-india-women-tour-of-england-2026";
+
+//    var response = await client.GetAsync(url);
+
+//    var html = await response.Content.ReadAsStringAsync();
+
+//    var matches = Regex.Matches(
+//        html,
+//        @"\\\""commText\\\"":\\\""(.*?)\\\""",
+//        RegexOptions.Singleline);
+
+//    var commentary = matches
+//        .Select(x => x.Groups[1].Value)
+//        .Take(20)
+//        .ToList();
+
+//    return Results.Ok(new
+//    {
+//        StatusCode = (int)response.StatusCode,
+//        HtmlLength = html.Length,
+//        CommentaryCount = matches.Count,
+//        Commentary = commentary
+//    });
+//});
 app.MapHub<CommentaryHub>("/hubs/commentary");
 
 app.MapGet("/", () => Results.Ok(new { service = "MatchApi", status = "running" }))
