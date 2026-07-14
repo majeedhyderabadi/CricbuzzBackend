@@ -6,4 +6,7 @@ public interface ICricbuzzService
     Task<TestMatchInfoDto?> GetMatchInfoAsync(
      long matchId,
      CancellationToken cancellationToken);
+    Task<CricbuzzScorecardResponseDto?> GetScorecardAsync(
+    long matchId,
+    CancellationToken cancellationToken);
 }

@@ -56,7 +56,30 @@ public class CricApiService : ICricApiService, ICricbuzzService
     }
 
 
+    public async Task<CricbuzzScorecardResponseDto?> GetScorecardAsync(
+    long matchId,
+    CancellationToken cancellationToken)
+    {
+        var response = await _httpClient.GetAsync(
+            $"api/mcenter/scorecard/{matchId}",
+            cancellationToken);
 
+        response.EnsureSuccessStatusCode();
+
+        var json = await response.Content.ReadAsStringAsync(
+            cancellationToken);
+
+        return JsonSerializer.Deserialize<CricbuzzScorecardResponseDto>(
+            json,
+            new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+    }
+
+
+
+    //Cricdatorg
 
     public async Task<CurrentMatchesResponse> GetCurrentMatchesAsync(
         int offset = 0,
