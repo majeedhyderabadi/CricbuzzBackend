@@ -12,4 +12,6 @@ public record CommentaryDto(
     int HomeScore,
     int? HomeWickets,
     int AwayScore,
-    int? AwayWickets);
+    int? AwayWickets,
+    string FixtureName,    
+    string SportName);
