@@ -23,7 +23,8 @@ public class FixtureRepository : IFixtureRepository
     public Task<Fixture?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
         return _context.Fixtures
-            .Include(f => f.Sport)
+            .Include(f => f.Sport).Include(f => f.HomeTeam)
+            .Include(f => f.AwayTeam)
             .FirstOrDefaultAsync(f => f.Id == id, cancellationToken);
     }
 

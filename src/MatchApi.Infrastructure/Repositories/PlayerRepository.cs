@@ -18,7 +18,7 @@ public class PlayerRepository : IPlayerRepository
 
     public Task<Player?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return _context.Players.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
+        return _context.Players.Include(x=>x.Team).FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
     }
     public async Task AddAsync(
       Player player,
