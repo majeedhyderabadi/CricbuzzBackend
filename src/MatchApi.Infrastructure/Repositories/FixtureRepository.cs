@@ -22,7 +22,9 @@ public class FixtureRepository : IFixtureRepository
 
     public Task<Fixture?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return _context.Fixtures.FirstOrDefaultAsync(f => f.Id == id, cancellationToken);
+        return _context.Fixtures
+            .Include(f => f.Sport)
+            .FirstOrDefaultAsync(f => f.Id == id, cancellationToken);
     }
 
     public async Task<IReadOnlyList<Fixture>> GetLiveAsync(CancellationToken cancellationToken)
