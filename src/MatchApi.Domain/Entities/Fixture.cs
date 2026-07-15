@@ -18,6 +18,8 @@ public class Fixture : BaseEntity
 
     public MatchStatus Status { get; set; } = MatchStatus.Scheduled;
 
+    public MatchPhase? Phase { get; set; }
+
     public Score HomeScore { get; set; } = null!;
     public Score AwayScore { get; set; } = null!;
 
@@ -82,6 +84,46 @@ public class Fixture : BaseEntity
         var entry = CommentaryEntry.Create(Id, side, playerId: null, action, note ?? "Score updated manually");
         CommentaryEntries.Add(entry);
         return entry;
+    }
+
+    public void UpdateStatus(MatchStatus newStatus)
+    {
+        var isValidTransition = (Status, newStatus) switch
+        {
+            (MatchStatus.Scheduled, MatchStatus.Live) => true,
+            (MatchStatus.Live, MatchStatus.Completed) => true,
+            _ => false
+        };
+
+        if (!isValidTransition)
+        {
+            throw new InvalidOperationException($"Cannot change fixture status from {Status} to {newStatus}.");
+        }
+
+        Status = newStatus;
+    }
+
+    public void SetPhase(MatchPhase phase)
+    {
+        //if (Status != MatchStatus.Live)
+        //{
+        //    throw new InvalidOperationException("The match phase can only be updated while the fixture is live.");
+        //}
+
+        var isCricket = Sport.Name == Enums.Sport.Cricket.ToString();
+        var isCricketPhase = phase is MatchPhase.FirstInnings or MatchPhase.SecondInnings;
+
+        if (isCricket && !isCricketPhase)
+        {
+            throw new InvalidOperationException("Only First Innings or Second Innings are valid phases for a cricket fixture.");
+        }
+
+        if (!isCricket && isCricketPhase)
+        {
+            throw new InvalidOperationException("Innings phases are only valid for cricket fixtures.");
+        }
+
+        Phase = phase;
     }
 
     private Score ScoreFor(FixtureSide side) => side == FixtureSide.Home ? HomeScore : AwayScore;
