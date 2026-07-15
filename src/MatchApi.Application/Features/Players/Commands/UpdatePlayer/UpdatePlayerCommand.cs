@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using MatchApi.Domain.DTOs;
+using MediatR;
 
 namespace MatchApi.Application.Features.Players.Commands.UpdatePlayer;
 public record UpdatePlayerCommand(
@@ -6,4 +7,4 @@ public record UpdatePlayerCommand(
     string PlayerName,
     Guid TeamId,
     Guid SportRoleId
-) : IRequest<bool>;
+) : IRequest<ResponseResult<bool>>;

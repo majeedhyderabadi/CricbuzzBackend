@@ -30,5 +30,11 @@ namespace MatchApi.Infrastructure.Repositories
                 .ToListAsync(cancellationToken);
 
         }
+        public async Task<bool> isSportExist(string sportName, CancellationToken cancellationToken)
+        {
+            var sport = await _context.Sports.FirstOrDefaultAsync(s => s.Name.ToLower() == sportName.ToLower(), cancellationToken);
+            return sport != null;
+
+        }
     }
 }

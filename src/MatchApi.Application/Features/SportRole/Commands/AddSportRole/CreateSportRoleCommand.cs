@@ -1,12 +1,10 @@
-﻿using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using MatchApi.Domain.DTOs;
+using MediatR;
 
 namespace MatchApi.Application.Features.SportRole.Commands.AddSportRole
 {
     public class CreateSportRoleCommand
-      : IRequest<CreateSportRoleResponse>
+      : IRequest<ResponseResult<string>>
     {
         public Guid SportId { get; set; }
         public string RoleName { get; set; } = string.Empty;

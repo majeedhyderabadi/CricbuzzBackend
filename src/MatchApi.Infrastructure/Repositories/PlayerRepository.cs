@@ -28,6 +28,13 @@ public class PlayerRepository : IPlayerRepository
         await _unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
+    public async Task<bool> isPlayerExist(string playerName, Guid teamId,CancellationToken cancellationToken)
+    {
+        var player = await _context.Players.FirstOrDefaultAsync(s => s.Name.ToLower() == playerName.ToLower() && s.TeamId == teamId, cancellationToken);
+        return player != null;
+
+    }
+
     public async Task<List<Player>> GetPlayersByTeamIdAsync(
     Guid teamId,
     CancellationToken cancellationToken)

@@ -62,4 +62,13 @@ public class TeamRepository : ITeamRepository
 
         await _context.SaveChangesAsync(cancellationToken);
     }
+    public async Task<bool> isTeamExixst(
+    Guid sportId,
+    string teamName,
+    CancellationToken cancellationToken)
+    {
+        var team = await _context.Teams
+            .FirstOrDefaultAsync(x => x.SportId == sportId && x.Name.ToLower() == teamName.ToLower(), cancellationToken);
+        return team != null;
+    }
 }

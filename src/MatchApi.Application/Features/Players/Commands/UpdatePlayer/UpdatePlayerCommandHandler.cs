@@ -1,11 +1,13 @@
 ﻿using MatchApi.Application.Common.Interfaces;
+using MatchApi.Domain.DTOs;
 using MatchApi.Domain.Entities;
 using MediatR;
+using System.Net;
 
 namespace MatchApi.Application.Features.Players.Commands.UpdatePlayer
 {
     public class UpdatePlayerCommandHandler
-    : IRequestHandler<UpdatePlayerCommand, bool>
+    : IRequestHandler<UpdatePlayerCommand, ResponseResult<bool>>
     {
         private readonly IPlayerRepository _repository;
 
@@ -14,20 +16,27 @@ namespace MatchApi.Application.Features.Players.Commands.UpdatePlayer
             _repository = repository;
         }
 
-        public async Task<bool> Handle(
+        public async Task<ResponseResult<bool>> Handle(
             UpdatePlayerCommand request,
             CancellationToken cancellationToken)
         {
-            Player player = new Player
+            try
             {
-                Id = request.PlayerId,
-                TeamId = request.TeamId,
-                Name = request.PlayerName,
-                SportRoleId = request.SportRoleId
-            };
-            await _repository.UpdatePlayerAsync(player, cancellationToken);
+                Player player = new Player
+                {
+                    Id = request.PlayerId,
+                    TeamId = request.TeamId,
+                    Name = request.PlayerName,
+                    SportRoleId = request.SportRoleId
+                };
+                await _repository.UpdatePlayerAsync(player, cancellationToken);
 
-            return true;
+                return new ResponseResult<bool> { Success = true, Message = "Player updated successfully." };
+            }
+            catch (Exception ex)
+            {
+                return new ResponseResult<bool> { Success = false, Error = new Error { Message = ex.Message, StatusCode = HttpStatusCode.InternalServerError.ToString() } };
+            }
         }
     }
 }

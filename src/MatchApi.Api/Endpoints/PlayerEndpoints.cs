@@ -1,7 +1,9 @@
-﻿using MatchApi.Application.Features.Players.Commands.AddPlayers;
+﻿using Azure;
+using MatchApi.Application.Features.Players.Commands.AddPlayers;
 using MatchApi.Application.Features.Players.Commands.DeletePlayer;
 using MatchApi.Application.Features.Players.Commands.UpdatePlayer;
 using MatchApi.Application.Features.Players.Queries.GetPlayers;
+using MatchApi.Domain.DTOs;
 using MediatR;
 
 namespace MatchApi.Api.Endpoints
@@ -17,7 +19,7 @@ namespace MatchApi.Api.Endpoints
             group.MapPost("/", AddPlayer)
                 .WithName("AddPlayer")
                 .WithSummary("Add player to a team")
-                .Produces<AddPlayerResponse>(StatusCodes.Status201Created)
+                .Produces<ResponseResult<string>>(StatusCodes.Status201Created)
                 .ProducesValidationProblem()
                 .ProducesProblem(StatusCodes.Status500InternalServerError);
 
@@ -58,24 +60,24 @@ namespace MatchApi.Api.Endpoints
             CancellationToken cancellationToken)
         {
             var response = await sender.Send(command, cancellationToken);
+            if(!response.Success)
+                Results.BadRequest(response);
 
-            return Results.Created(
-                $"/api/players/{response.Id}",
-                response);
+            return Results.Ok(response);
         }
         private static async Task<IResult> DeletePlayer(
             Guid id,
             ISender sender,
             CancellationToken cancellationToken)
         {
-            var deleted = await sender.Send(
+            var response = await sender.Send(
                 new DeletePlayerCommand(id),
                 cancellationToken);
 
-            if (!deleted)
-                return Results.NotFound();
+            if (!response.Success)
+                Results.BadRequest(response);
 
-            return Results.NoContent();
+            return Results.Ok(response);
         }
         private static async Task<IResult> UpdatePlayer(
     Guid id,
@@ -86,12 +88,12 @@ namespace MatchApi.Api.Endpoints
             if (id != command.PlayerId)
                 return Results.BadRequest("Route Id and Body Id must match.");
 
-            var updated = await sender.Send(command, cancellationToken);
+            var response = await sender.Send(command, cancellationToken);
 
-            if (!updated)
-                return Results.NotFound();
+            if (!response.Success)
+                Results.BadRequest(response);
 
-            return Results.NoContent();
+            return Results.Ok(response);
         }
     }
 }
