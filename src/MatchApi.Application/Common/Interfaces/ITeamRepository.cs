@@ -9,5 +9,9 @@ public interface ITeamRepository
     Task<List<Team>> GetTeamsAsync(CancellationToken cancellationToken);
     Task DeleteTeamAsync(Guid teamId, CancellationToken cancellationToken);
     Task UpdateTeamAsync(Team team, CancellationToken cancellationToken);
+    Task<bool> isTeamExixst(
+    Guid sportId,
+    string teamName,
+    CancellationToken cancellationToken);
 
 }

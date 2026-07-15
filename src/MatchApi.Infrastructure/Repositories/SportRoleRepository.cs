@@ -38,5 +38,15 @@ namespace MatchApi.Infrastructure.Repositories
                 .OrderBy(x => x.RoleName)
                 .ToListAsync(cancellationToken);
         }
+
+        public async Task<bool> isSportRoleExixst(
+        Guid sportId,
+        string roleName,
+        CancellationToken cancellationToken)
+        {
+            var role = await _context.SportRoles
+                .FirstOrDefaultAsync(x => x.SportId == sportId && x.RoleName.ToLower() == roleName.ToLower(), cancellationToken);
+            return role != null;
+        }
     }
 }

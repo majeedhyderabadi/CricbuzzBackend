@@ -11,5 +11,9 @@ namespace MatchApi.Application.Common.Interfaces
         Task<List<SportRole>> GetSportRolesBySportIdAsync(
             Guid sportId,
             CancellationToken cancellationToken);
+        Task<bool> isSportRoleExixst(
+        Guid sportId,
+        string roleName,
+        CancellationToken cancellationToken);
     }
 }

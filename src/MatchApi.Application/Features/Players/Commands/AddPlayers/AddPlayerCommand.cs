@@ -1,8 +1,9 @@
-﻿using MediatR;
+﻿using MatchApi.Domain.DTOs;
+using MediatR;
 
 namespace MatchApi.Application.Features.Players.Commands.AddPlayers
 {
-    public class AddPlayerCommand : IRequest<AddPlayerResponse>
+    public class AddPlayerCommand : IRequest<ResponseResult<string>>
     {
         public Guid TeamId { get; set; }
 

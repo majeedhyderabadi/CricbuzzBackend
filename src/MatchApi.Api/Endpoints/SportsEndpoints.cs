@@ -3,6 +3,7 @@ using MatchApi.Application.Features.Sport.Queries.GetSports;
 using MatchApi.Application.Features.SportRole.Commands.AddSportRole;
 using MatchApi.Application.Features.SportRole.Queries.GetSportRoles;
 using MatchApi.Application.Features.SportRole.Queries.GetSportsRolesBySportId;
+using MatchApi.Domain.DTOs;
 using MediatR;
 
 namespace MatchApi.Api.Endpoints
@@ -25,11 +26,11 @@ namespace MatchApi.Api.Endpoints
 
             group.MapPost("/", CreateSport)
                  .WithName("CreateSport")
-                 .Produces<CreateSportResponse>(StatusCodes.Status201Created);
+                 .Produces<ResponseResult<string>>(StatusCodes.Status201Created);
 
             group.MapPost("/roles", CreateSportRole)
                  .WithName("CreateSportRole")
-                 .Produces<CreateSportRoleResponse>(StatusCodes.Status201Created);
+                 .Produces<ResponseResult<string>>(StatusCodes.Status201Created);
 
             group.MapGet("/", GetSports);
 
@@ -45,10 +46,10 @@ namespace MatchApi.Api.Endpoints
             CancellationToken cancellationToken)
         {
             var response = await sender.Send(command, cancellationToken);
+            if (!response.Success)
+                Results.BadRequest(response);
 
-            return Results.Created(
-                $"/api/sports/{response.Id}",
-                response);
+            return Results.Ok(response);
         }
 
         private static async Task<IResult> CreateSportRole(
@@ -58,9 +59,10 @@ namespace MatchApi.Api.Endpoints
         {
             var response = await sender.Send(command, cancellationToken);
 
-            return Results.Created(
-                $"/api/sports/{response.SportId}/roles/{response.SportId}",
-                response);
+            if (!response.Success)
+                Results.BadRequest(response);
+
+            return Results.Ok(response);
         }
         private static async Task<IResult> GetSports(
             ISender sender,

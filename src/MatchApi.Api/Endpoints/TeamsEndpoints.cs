@@ -1,4 +1,5 @@
-﻿using MatchApi.Application.Features.Teams.Commands.CreateTeam;
+﻿using Azure;
+using MatchApi.Application.Features.Teams.Commands.CreateTeam;
 using MatchApi.Application.Features.Teams.Commands.DeleteTeam;
 using MatchApi.Application.Features.Teams.Commands.UpdateTeam;
 using MatchApi.Application.Features.Teams.Queries.GetTeams;
@@ -45,15 +46,11 @@ namespace MatchApi.Api.Endpoints
             ISender sender,
             CancellationToken cancellationToken)
         {
-            try
-            {
-                var response = await sender.Send(command, cancellationToken);
-                return Results.Created($"/api/teams/{response.Id}", response);
-            }
-            catch (Exception ex)
-            {
-                return Results.Problem(ex.Message, statusCode: StatusCodes.Status400BadRequest);
-            }
+            var response = await sender.Send(command, cancellationToken);
+            if (!response.Success)
+                Results.BadRequest(response);
+
+            return Results.Ok(response);
         }
         private static async Task<IResult> GetTeams(
             ISender sender,
@@ -70,11 +67,14 @@ namespace MatchApi.Api.Endpoints
             ISender sender,
             CancellationToken cancellationToken)
         {
-            await sender.Send(
+            var response = await sender.Send(
                 new DeleteTeamCommand(id),
                 cancellationToken);
 
-            return Results.NoContent();
+            if (!response.Success)
+                Results.BadRequest(response);
+
+            return Results.Ok(response);
         }
         private static async Task<IResult> UpdateTeam(
             Guid id,
@@ -85,12 +85,12 @@ namespace MatchApi.Api.Endpoints
             if (id != command.Id)
                 return Results.BadRequest("Route Id and Body Id must match.");
 
-            var updated = await sender.Send(command, cancellationToken);
+            var response = await sender.Send(command, cancellationToken);
 
-            if (!updated)
-                return Results.NotFound();
+            if (!response.Success)
+                Results.BadRequest(response);
 
-            return Results.NoContent();
+            return Results.Ok(response);
         }
     }
 }

@@ -1,10 +1,12 @@
 ﻿using MatchApi.Application.Common.Interfaces;
+using MatchApi.Domain.DTOs;
 using MediatR;
+using System.Net;
 
 namespace MatchApi.Application.Features.Sport.Commands.CreateSport
 {
     public class CreateSportCommandHandler
-    : IRequestHandler<CreateSportCommand, CreateSportResponse>
+    : IRequestHandler<CreateSportCommand, ResponseResult<string>>
     {
         private readonly ISportRepository _repository;
 
@@ -13,22 +15,24 @@ namespace MatchApi.Application.Features.Sport.Commands.CreateSport
             _repository = repository;
         }
 
-        public async Task<CreateSportResponse> Handle(
+        public async Task<ResponseResult<string>> Handle(
             CreateSportCommand request,
             CancellationToken cancellationToken)
         {
-            var sport = new Domain.Entities.Sport
+            if (await _repository.isSportExist(request.Name, cancellationToken))
+            {
+                return new ResponseResult<string> { Success = false, Message = "Sport with the same name already exists." };
+            }
+            var newSport = new Domain.Entities.Sport
             {
                 Name = request.Name,
                 Description = request.Description
             };
-
-            await _repository.AddSportAsync(sport, cancellationToken);
-
-            return new CreateSportResponse
+            await _repository.AddSportAsync(newSport, cancellationToken);
+            return new ResponseResult<string>
             {
-                Id = sport.Id,
-                Name = sport.Name
+                Success = true,
+                Message = "Sport created successfully.",
             };
         }
     }

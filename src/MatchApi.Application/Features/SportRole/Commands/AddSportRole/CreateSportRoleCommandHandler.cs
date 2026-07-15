@@ -1,10 +1,12 @@
 ﻿using MatchApi.Application.Common.Interfaces;
+using MatchApi.Domain.DTOs;
 using MediatR;
+using System.Net;
 
 namespace MatchApi.Application.Features.SportRole.Commands.AddSportRole
 {
     public class CreateSportRoleCommandHandler
-      : IRequestHandler<CreateSportRoleCommand, CreateSportRoleResponse>
+      : IRequestHandler<CreateSportRoleCommand, ResponseResult<string>>
     {
         private readonly ISportRoleRepository _repository;
 
@@ -13,10 +15,22 @@ namespace MatchApi.Application.Features.SportRole.Commands.AddSportRole
             _repository = repository;
         }
 
-        public async Task<CreateSportRoleResponse> Handle(
+        public async Task<ResponseResult<string>> Handle(
             CreateSportRoleCommand request,
             CancellationToken cancellationToken)
         {
+            if(await _repository.isSportRoleExixst(request.SportId, request.RoleName, cancellationToken))
+            {
+                return new ResponseResult<string>
+                {
+                    Success = false,
+                    Error = new Error
+                    {
+                        StatusCode = HttpStatusCode.BadRequest.ToString(),
+                        Message = $"Sport role '{request.RoleName}' already exists for given sport."
+                    }
+                };
+            }
             var role = new Domain.Entities.SportRole
             {
                 Id = Guid.NewGuid(),
@@ -27,11 +41,10 @@ namespace MatchApi.Application.Features.SportRole.Commands.AddSportRole
 
             await _repository.AddSportRoleAsync(role, cancellationToken);
 
-            return new CreateSportRoleResponse
+            return new ResponseResult<string>
             {
-                RoletId = role.Id,
-                SportId = role.SportId,
-                RoleName = role.RoleName
+                Success = true,
+                Message = "Sport role created successfully.",
             };
         }
     }

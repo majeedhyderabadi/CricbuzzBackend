@@ -1,11 +1,13 @@
 ﻿using MatchApi.Application.Common.Interfaces;
+using MatchApi.Domain.DTOs;
 using MatchApi.Domain.Entities;
 using MediatR;
+using System.Net;
 
 namespace MatchApi.Application.Features.Teams.Commands.UpdateTeam
 {
     public class UpdateTeamCommandHandler
-    : IRequestHandler<UpdateTeamCommand, bool>
+    : IRequestHandler<UpdateTeamCommand, ResponseResult<bool>>
     {
         private readonly ITeamRepository _repository;
 
@@ -14,7 +16,7 @@ namespace MatchApi.Application.Features.Teams.Commands.UpdateTeam
             _repository = repository;
         }
 
-        public async Task<bool> Handle(
+        public async Task<ResponseResult<bool>> Handle(
             UpdateTeamCommand request,
             CancellationToken cancellationToken)
         {
@@ -29,12 +31,11 @@ namespace MatchApi.Application.Features.Teams.Commands.UpdateTeam
                 };
                 await _repository.UpdateTeamAsync(updatedTeam, cancellationToken);
 
-                return true;
+                return new ResponseResult<bool> { Success= true, Message = "Team updated successfully."};
             }
             catch (Exception ex)
             {
-
-                return false;
+                return new ResponseResult<bool> { Success = false, Error = new Error { Message = ex.Message, StatusCode = HttpStatusCode.InternalServerError.ToString()} };
             }
         }
     }

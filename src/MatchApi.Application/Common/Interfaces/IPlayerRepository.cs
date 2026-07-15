@@ -11,4 +11,5 @@ public interface IPlayerRepository
      CancellationToken cancellationToken);
     Task DeletePlayerAsync(Guid teamId, CancellationToken cancellationToken);
     Task UpdatePlayerAsync(Player request, CancellationToken cancellationToken);
+    Task<bool> isPlayerExist(string playerName, Guid teamId, CancellationToken cancellationToken);
 }

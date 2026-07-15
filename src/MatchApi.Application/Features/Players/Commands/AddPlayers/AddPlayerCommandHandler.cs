@@ -1,11 +1,12 @@
 ﻿using MatchApi.Application.Common.Interfaces;
+using MatchApi.Domain.DTOs;
 using MatchApi.Domain.Entities;
 using MediatR;
 
 namespace MatchApi.Application.Features.Players.Commands.AddPlayers
 {
     public class AddPlayerCommandHandler
-     : IRequestHandler<AddPlayerCommand, AddPlayerResponse>
+     : IRequestHandler<AddPlayerCommand, ResponseResult<string>>
     {
         private readonly IPlayerRepository _repository;
 
@@ -14,10 +15,18 @@ namespace MatchApi.Application.Features.Players.Commands.AddPlayers
             _repository = repository;
         }
 
-        public async Task<AddPlayerResponse> Handle(
+        public async Task<ResponseResult<string>> Handle(
             AddPlayerCommand request,
             CancellationToken cancellationToken)
         {
+            if(await _repository.isPlayerExist(request.PlayerName, request.TeamId, cancellationToken))
+            {
+                return new ResponseResult<string>
+                {
+                    Success = false,
+                    Message = "Player already exists for the given team."
+                };
+            }
             var player = new Player
             {
                 Id = Guid.NewGuid(),
@@ -28,12 +37,10 @@ namespace MatchApi.Application.Features.Players.Commands.AddPlayers
 
             await _repository.AddAsync(player, cancellationToken);
 
-            return new AddPlayerResponse
+            return new ResponseResult<string>
             {
-                Id = player.Id,
-                TeamId = player.TeamId,
-                PlayerName = player.Name,
-                SportRoleId = player.SportRoleId
+                Success = true,
+                Message = "Player added successfully."
             };
         }
     }
