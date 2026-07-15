@@ -1,8 +1,10 @@
 using FluentValidation;
 using MatchApi.Application.Features.Fixtures.Commands.CreateFixture;
+using MatchApi.Application.Features.Fixtures.Commands.UpdateFixture;
 using MatchApi.Application.Features.Fixtures.Common;
 using MatchApi.Application.Features.Fixtures.Queries.GetLiveFixtures;
 using MatchApi.Application.Features.Fixtures.Queries.GetTopPerformers;
+using MatchApi.Domain.Enums;
 using MediatR;
 
 namespace MatchApi.Api.Endpoints;
@@ -34,6 +36,13 @@ public static class FixtureEndpoints
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status400BadRequest);
 
+        group.MapPatch("/{fixtureId:guid}", UpdateFixture)
+            .WithName("UpdateFixture")
+            .WithSummary("Updates a fixture's status and/or match phase (e.g. Scheduled -> Live, or set innings/half)")
+            .Produces<FixtureDto>(StatusCodes.Status200OK)
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status400BadRequest);
+
         return app;
     }
 
@@ -51,6 +60,31 @@ public static class FixtureEndpoints
         try
         {
             var response = await sender.Send(new GetTopPerformersQuery(fixtureId), cancellationToken);
+            return Results.Ok(response);
+        }
+        catch (ValidationException ex)
+        {
+            var errors = ex.Errors
+                .GroupBy(e => e.PropertyName)
+                .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray());
+
+            return Results.ValidationProblem(errors);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Results.Problem(ex.Message, statusCode: StatusCodes.Status400BadRequest);
+        }
+    }
+
+    private static async Task<IResult> UpdateFixture(
+        Guid fixtureId,
+        UpdateFixtureRequest request,
+        ISender sender,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var response = await sender.Send(new UpdateFixtureCommand(fixtureId, request.Status, request.Phase), cancellationToken);
             return Results.Ok(response);
         }
         catch (ValidationException ex)
@@ -91,3 +125,5 @@ public static class FixtureEndpoints
         }
     }
 }
+
+public record UpdateFixtureRequest(MatchStatus? Status, MatchPhase? Phase);
