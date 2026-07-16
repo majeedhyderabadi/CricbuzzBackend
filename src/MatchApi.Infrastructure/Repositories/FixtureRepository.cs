@@ -38,4 +38,22 @@ public class FixtureRepository : IFixtureRepository
             .OrderBy(f => f.ScheduledAtUtc)
             .ToListAsync(cancellationToken);
     }
+    public async Task<IReadOnlyList<Fixture>> SearchAsync(
+    string searchTerm,
+    CancellationToken cancellationToken)
+    {
+        searchTerm = searchTerm.Trim().ToLower();
+
+        return await _context.Fixtures
+            .AsNoTracking()
+            .Include(f => f.HomeTeam)
+            .Include(f => f.AwayTeam)
+            .Include(f => f.Sport)
+            .Where(f =>
+                f.HomeTeam.Name.ToLower().Contains(searchTerm) ||
+                f.AwayTeam.Name.ToLower().Contains(searchTerm) ||
+                f.Sport.Name.ToLower().Contains(searchTerm))
+            .OrderBy(f => f.ScheduledAtUtc)
+            .ToListAsync(cancellationToken);
+    }
 }

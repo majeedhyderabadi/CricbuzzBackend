@@ -5,6 +5,7 @@ using MatchApi.Application.Features.Fixtures.Common;
 using MatchApi.Application.Features.Fixtures.Queries.GetFixtureDetails;
 using MatchApi.Application.Features.Fixtures.Queries.GetLiveFixtures;
 using MatchApi.Application.Features.Fixtures.Queries.GetTopPerformers;
+using MatchApi.Application.Features.Fixtures.Queries.SearchFixtures;
 using MatchApi.Domain.Enums;
 using MediatR;
 
@@ -50,6 +51,10 @@ public static class FixtureEndpoints
             .Produces<FixtureDto>(StatusCodes.Status200OK)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status400BadRequest);
+
+       group.MapGet("/search", SearchFixtures)
+            .WithName("SearchFixtures")
+            .WithSummary("Search fixtures by team or sport");
 
         return app;
     }
@@ -155,6 +160,19 @@ public static class FixtureEndpoints
         {
             return Results.Problem(ex.Message, statusCode: StatusCodes.Status400BadRequest);
         }
+    }
+
+
+    private static async Task<IResult> SearchFixtures(
+    string searchTerm,
+    ISender sender,
+    CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(
+            new SearchFixturesQuery(searchTerm),
+            cancellationToken);
+
+        return Results.Ok(result);
     }
 }
 
