@@ -57,9 +57,7 @@ public static class FixtureEndpoints
             .WithSummary("Search fixtures by team or sport");
 
 
-        group.MapGet("/search", SearchFixtures)
-            .WithName("SearchFixtures")
-            .WithSummary("Search fixtures");
+        
 
         return app;
     }
