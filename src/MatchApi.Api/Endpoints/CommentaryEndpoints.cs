@@ -1,6 +1,7 @@
 using FluentValidation;
 using MatchApi.Application.Features.Commentary.Commands.CreateCommentary;
 using MatchApi.Application.Features.Commentary.Common;
+using MatchApi.Application.Features.Commentary.Queries.GetCommentary;
 using MatchApi.Domain.Enums;
 using MediatR;
 
@@ -21,7 +22,38 @@ public static class CommentaryEndpoints
             .ProducesProblem(StatusCodes.Status400BadRequest)
             .ProducesProblem(StatusCodes.Status500InternalServerError);
 
+        group.MapGet("/", GetCommentary)
+            .WithName("GetCommentary")
+            .WithSummary("Gets all commentary entries for a fixture, most recent first")
+            .Produces<IReadOnlyList<CommentaryDto>>(StatusCodes.Status200OK)
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status400BadRequest);
+
         return app;
+    }
+
+    private static async Task<IResult> GetCommentary(
+        Guid fixtureId,
+        ISender sender,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var response = await sender.Send(new GetCommentaryQuery(fixtureId), cancellationToken);
+            return Results.Ok(response);
+        }
+        catch (ValidationException ex)
+        {
+            var errors = ex.Errors
+                .GroupBy(e => e.PropertyName)
+                .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray());
+
+            return Results.ValidationProblem(errors);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Results.Problem(ex.Message, statusCode: StatusCodes.Status400BadRequest);
+        }
     }
 
     private static async Task<IResult> CreateCommentary(
