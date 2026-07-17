@@ -1,6 +1,7 @@
 using FluentValidation;
 using MatchApi.Application.Features.Fixtures.Commands.CreateFixture;
 using MatchApi.Application.Features.Fixtures.Commands.UpdateFixture;
+using MatchApi.Application.Features.Fixtures.Commands.UpdateFixtureScore;
 using MatchApi.Application.Features.Fixtures.Common;
 using MatchApi.Application.Features.Fixtures.Queries.GetFixtureDetails;
 using MatchApi.Application.Features.Fixtures.Queries.GetLiveFixtures;
@@ -47,6 +48,13 @@ public static class FixtureEndpoints
         group.MapPatch("/{fixtureId:guid}", UpdateFixture)
             .WithName("UpdateFixture")
             .WithSummary("Updates a fixture's status and/or match phase (e.g. Scheduled -> Live, or set innings/half)")
+            .Produces<FixtureDto>(StatusCodes.Status200OK)
+            .ProducesValidationProblem()
+            .ProducesProblem(StatusCodes.Status400BadRequest);
+
+        group.MapPatch("/{fixtureId:guid}/score", UpdateFixtureScore)
+            .WithName("UpdateFixtureScore")
+            .WithSummary("Adds to a team's existing score (and wickets, for cricket) on the fixture directly, without logging commentary")
             .Produces<FixtureDto>(StatusCodes.Status200OK)
             .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status400BadRequest);
@@ -133,6 +141,33 @@ public static class FixtureEndpoints
         }
     }
 
+    private static async Task<IResult> UpdateFixtureScore(
+        Guid fixtureId,
+        UpdateFixtureScoreRequest request,
+        ISender sender,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var response = await sender.Send(
+                new UpdateFixtureScoreCommand(fixtureId, request.Side, request.RunsDelta, request.WicketsDelta),
+                cancellationToken);
+            return Results.Ok(response);
+        }
+        catch (ValidationException ex)
+        {
+            var errors = ex.Errors
+                .GroupBy(e => e.PropertyName)
+                .ToDictionary(g => g.Key, g => g.Select(e => e.ErrorMessage).ToArray());
+
+            return Results.ValidationProblem(errors);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Results.Problem(ex.Message, statusCode: StatusCodes.Status400BadRequest);
+        }
+    }
+
     private static async Task<IResult> CreateFixture(
         CreateFixtureCommand command,
         ISender sender,
@@ -159,3 +194,5 @@ public static class FixtureEndpoints
 }
 
 public record UpdateFixtureRequest(MatchStatus? Status, MatchPhase? Phase);
+
+public record UpdateFixtureScoreRequest(FixtureSide Side, int RunsDelta, int? WicketsDelta);
