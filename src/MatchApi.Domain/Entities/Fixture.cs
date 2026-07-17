@@ -86,6 +86,18 @@ public class Fixture : BaseEntity
         return entry;
     }
 
+    // Adds to a team's existing score/wickets (e.g. from an admin edit form) without touching
+    // the commentary feed at all - unlike AdjustScore, which always logs a CommentaryEntry.
+    public void UpdateScore(FixtureSide side, int runsDelta, int? wicketsDelta)
+    {
+        if (wicketsDelta is not null && wicketsDelta != 0 && Sport.Name != Enums.Sport.Cricket.ToString())
+        {
+            throw new InvalidOperationException("Wickets can only be updated for cricket fixtures.");
+        }
+
+        ScoreFor(side).Apply(runsDelta, wicketsDelta ?? 0);
+    }
+
     public void UpdateStatus(MatchStatus newStatus)
     {
         var isValidTransition = (Status, newStatus) switch
