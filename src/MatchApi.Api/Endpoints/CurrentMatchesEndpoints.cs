@@ -2,6 +2,7 @@
 using MatchApi.Application.Features.ExternalMatches.Queries;
 using MatchApi.Application.Features.ExternalMatches.Queries.GetCricbuzzScorecard;
 using MatchApi.Application.Features.ExternalMatches.Queries.GetMatchDetails;
+using MatchApi.Application.Features.ExternalMatches.Queries.SearchMatches;
 using MediatR;
 
 namespace MatchApi.Api.Endpoints;
@@ -80,6 +81,18 @@ public static class CurrentMatchesEndpoints
     });
 
 
+
+        group.MapGet("/search", async (
+    string searchText,
+    ISender sender,
+    CancellationToken cancellationToken) =>
+        {
+            var result = await sender.Send(
+                new SearchMatchesQuery(searchText),
+                cancellationToken);
+
+            return Results.Ok(result);
+        });
 
         return app;
     }
