@@ -5,34 +5,49 @@ using MediatR;
 namespace MatchApi.Application.Features.ExternalMatches.Queries.SearchMatches;
 
 public class SearchMatchesQueryHandler
-    : IRequestHandler<SearchMatchesQuery, CurrentMatchesResponse>
+    : IRequestHandler<SearchMatchesQuery, CricbuzzMatchListDto>
 {
-    private readonly ICricApiService _cricApiService;
+    private readonly ICricbuzzService _cricbuzzService;
 
-    public SearchMatchesQueryHandler(ICricApiService cricApiService)
+    public SearchMatchesQueryHandler(ICricbuzzService cricbuzzService)
     {
-        _cricApiService = cricApiService;
+        _cricbuzzService = cricbuzzService;
     }
 
-    public async Task<CurrentMatchesResponse> Handle(
+    public async Task<CricbuzzMatchListDto> Handle(
         SearchMatchesQuery request,
         CancellationToken cancellationToken)
     {
-        var response = await _cricApiService.GetCurrentMatchesAsync(
-            cancellationToken: cancellationToken);
+        var response = await _cricbuzzService.GetMatchesAsync();
+
+        if (response == null)
+        {
+            return new CricbuzzMatchListDto();
+        }
 
         if (string.IsNullOrWhiteSpace(request.SearchText))
         {
             return response;
         }
 
-        response.Data = response.Data
+        response.Matches = response.Matches
             .Where(match =>
-                (!string.IsNullOrWhiteSpace(match.Name) &&
-                 match.Name.Contains(request.SearchText, StringComparison.OrdinalIgnoreCase))
+                (match.Match.MatchInfo.Team1.TeamName?.Contains(
+                    request.SearchText,
+                    StringComparison.OrdinalIgnoreCase) ?? false)
                 ||
-                match.Teams.Any(team =>
-                    team.Contains(request.SearchText, StringComparison.OrdinalIgnoreCase)))
+                (match.Match.MatchInfo.Team2.TeamName?.Contains(
+                    request.SearchText,
+                    StringComparison.OrdinalIgnoreCase) ?? false)
+                ||
+                (match.Match.MatchInfo.SeriesName?.Contains(
+                    request.SearchText,
+                    StringComparison.OrdinalIgnoreCase) ?? false)
+                ||
+                (match.Match.MatchInfo.MatchDesc?.Contains(
+                    request.SearchText,
+                    StringComparison.OrdinalIgnoreCase) ?? false)
+            )
             .ToList();
 
         return response;
