@@ -129,6 +129,10 @@ namespace MatchApi.Infrastructure.Migrations
                     b.Property<Guid>("HomeTeamId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Phase")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
                     b.Property<DateTime>("ScheduledAtUtc")
                         .HasColumnType("datetime2");
 
@@ -223,7 +227,7 @@ namespace MatchApi.Infrastructure.Migrations
                             Id = new Guid("44444444-4444-4444-4444-444444444442"),
                             CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "Okafor",
-                            SportRoleId = new Guid("dddddddd-dddd-dddd-dddd-dddddddddddd"),
+                            SportRoleId = new Guid("12121212-1212-1212-1212-121212121212"),
                             TeamId = new Guid("22222222-2222-2222-2222-222222222222")
                         },
                         new
@@ -378,6 +382,14 @@ namespace MatchApi.Infrastructure.Migrations
                             Description = "Description",
                             RoleName = "Forward",
                             SportId = new Guid("22222222-2222-2222-2222-222222222222")
+                        },
+                        new
+                        {
+                            Id = new Guid("12121212-1212-1212-1212-121212121212"),
+                            CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Description",
+                            RoleName = "Midfielder",
+                            SportId = new Guid("22222222-2222-2222-2222-222222222222")
                         });
                 });
 
@@ -419,7 +431,7 @@ namespace MatchApi.Infrastructure.Migrations
                             ColorHex = "#8B5CF6",
                             CreatedAtUtc = new DateTime(2026, 7, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Name = "NVian Strikers",
-                            SportId = new Guid("66666666-6666-6666-6666-666666666666")
+                            SportId = new Guid("11111111-1111-1111-1111-111111111111")
                         },
                         new
                         {
@@ -471,14 +483,11 @@ namespace MatchApi.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-
                     b.HasOne("MatchApi.Domain.Entities.Sport", "Sport")
                         .WithMany()
                         .HasForeignKey("SportId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-
 
                     b.OwnsOne("MatchApi.Domain.Common.Score", "AwayScore", b1 =>
                         {

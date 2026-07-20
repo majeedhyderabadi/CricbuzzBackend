@@ -9,6 +9,7 @@ public record FixtureDto(
     string Sport,
     DateTime ScheduledAtUtc,
     string Status,
+    string? Phase,
     int HomeScore,
     int? HomeWickets,
     int AwayScore,

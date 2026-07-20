@@ -45,7 +45,9 @@ public class CreateCommentaryCommandHandler : IRequestHandler<CreateCommentaryCo
         {
             throw new InvalidOperationException("Player does not belong to the team on the selected side.");
         }
-
+        var team = player.Team?.Name;
+        var sport=player.Team?.Sport?.Name;
+        var fixtureName= fixture.HomeTeam?.Name +" v "+ fixture.AwayTeam?.Name;
         var entry = fixture.AddCommentary(request.Side, request.PlayerId, request.Action, request.Note);
 
         // Explicitly registered as Added: the entry's Id is already a real (non-default) Guid by the
@@ -69,7 +71,10 @@ public class CreateCommentaryCommandHandler : IRequestHandler<CreateCommentaryCo
             fixture.HomeScore.Runs,
             fixture.HomeScore.Wickets,
             fixture.AwayScore.Runs,
-            fixture.AwayScore.Wickets);
+            fixture.AwayScore.Wickets,
+            fixtureName,
+            sport
+            );
 
         await _broadcaster.BroadcastAsync(dto, cancellationToken);
 

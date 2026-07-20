@@ -25,6 +25,10 @@ public class FixtureConfiguration : IEntityTypeConfiguration<Fixture>
             .HasConversion<string>()
             .HasMaxLength(20);
 
+        builder.Property(f => f.Phase)
+            .HasConversion<string>()
+            .HasMaxLength(20);
+
         builder.Property(f => f.ScheduledAtUtc)
             .IsRequired();
 

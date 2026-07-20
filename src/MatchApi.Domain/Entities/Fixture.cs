@@ -18,6 +18,8 @@ public class Fixture : BaseEntity
 
     public MatchStatus Status { get; set; } = MatchStatus.Scheduled;
 
+    public MatchPhase? Phase { get; set; }
+
     public Score HomeScore { get; set; } = null!;
     public Score AwayScore { get; set; } = null!;
 
@@ -30,7 +32,9 @@ public class Fixture : BaseEntity
 
         if (homeTeam.SportId != awayTeam.SportId)
             throw new InvalidOperationException("Both teams must play the same sport.");
-      //  var tracksWickets = homeTeam.Sport == Sport.Cricket;
+
+        var tracksWickets = homeTeam.Sport?.Name == "Cricket";
+
         return new Fixture
         {
             HomeTeamId = homeTeam.Id,
@@ -38,8 +42,8 @@ public class Fixture : BaseEntity
             SportId = homeTeam.SportId,
             ScheduledAtUtc = scheduledAtUtc,
             Status = MatchStatus.Scheduled,
-            //HomeScore = Score.Zero(tracksWickets),
-            //AwayScore = Score.Zero(tracksWickets)
+            HomeScore = Score.Zero(tracksWickets),
+            AwayScore = Score.Zero(tracksWickets)
         };
     }
 
@@ -80,6 +84,58 @@ public class Fixture : BaseEntity
         var entry = CommentaryEntry.Create(Id, side, playerId: null, action, note ?? "Score updated manually");
         CommentaryEntries.Add(entry);
         return entry;
+    }
+
+    // Adds to a team's existing score/wickets (e.g. from an admin edit form) without touching
+    // the commentary feed at all - unlike AdjustScore, which always logs a CommentaryEntry.
+    public void UpdateScore(FixtureSide side, int runsDelta, int? wicketsDelta)
+    {
+        if (wicketsDelta is not null && wicketsDelta != 0 && Sport.Name != Enums.Sport.Cricket.ToString())
+        {
+            throw new InvalidOperationException("Wickets can only be updated for cricket fixtures.");
+        }
+
+        ScoreFor(side).Apply(runsDelta, wicketsDelta ?? 0);
+    }
+
+    public void UpdateStatus(MatchStatus newStatus)
+    {
+        var isValidTransition = (Status, newStatus) switch
+        {
+            (MatchStatus.Scheduled, MatchStatus.Live) => true,
+            (MatchStatus.Live, MatchStatus.Completed) => true,
+            _ => false
+        };
+
+        if (!isValidTransition)
+        {
+            throw new InvalidOperationException($"Cannot change fixture status from {Status} to {newStatus}.");
+        }
+
+        Status = newStatus;
+    }
+
+    public void SetPhase(MatchPhase phase)
+    {
+        //if (Status != MatchStatus.Live)
+        //{
+        //    throw new InvalidOperationException("The match phase can only be updated while the fixture is live.");
+        //}
+
+        var isCricket = Sport.Name == Enums.Sport.Cricket.ToString();
+        var isCricketPhase = phase is MatchPhase.FirstInnings or MatchPhase.SecondInnings;
+
+        if (isCricket && !isCricketPhase)
+        {
+            throw new InvalidOperationException("Only First Innings or Second Innings are valid phases for a cricket fixture.");
+        }
+
+        if (!isCricket && isCricketPhase)
+        {
+            throw new InvalidOperationException("Innings phases are only valid for cricket fixtures.");
+        }
+
+        Phase = phase;
     }
 
     private Score ScoreFor(FixtureSide side) => side == FixtureSide.Home ? HomeScore : AwayScore;

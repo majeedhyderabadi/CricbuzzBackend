@@ -22,7 +22,10 @@ public class FixtureRepository : IFixtureRepository
 
     public Task<Fixture?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        return _context.Fixtures.FirstOrDefaultAsync(f => f.Id == id, cancellationToken);
+        return _context.Fixtures
+            .Include(f => f.Sport).Include(f => f.HomeTeam)
+            .Include(f => f.AwayTeam)
+            .FirstOrDefaultAsync(f => f.Id == id, cancellationToken);
     }
 
     public async Task<IReadOnlyList<Fixture>> GetLiveAsync(CancellationToken cancellationToken)
@@ -31,8 +34,27 @@ public class FixtureRepository : IFixtureRepository
             .AsNoTracking()
             .Include(f => f.HomeTeam)
             .Include(f => f.AwayTeam)
-            .Where(f => f.Status == MatchStatus.Live)
+            .Include(f => f.Sport)
             .OrderBy(f => f.ScheduledAtUtc)
             .ToListAsync(cancellationToken);
     }
+    public async Task<IReadOnlyList<Fixture>> SearchAsync(
+    string searchTerm,
+    CancellationToken cancellationToken)
+    {
+        searchTerm = searchTerm.Trim().ToLower();
+
+        return await _context.Fixtures
+            .AsNoTracking()
+            .Include(f => f.HomeTeam)
+            .Include(f => f.AwayTeam)
+            .Include(f => f.Sport)
+            .Where(f =>
+                f.HomeTeam.Name.ToLower().Contains(searchTerm) ||
+                f.AwayTeam.Name.ToLower().Contains(searchTerm) ||
+                f.Sport.Name.ToLower().Contains(searchTerm))
+            .OrderBy(f => f.ScheduledAtUtc)
+            .ToListAsync(cancellationToken);
+    }
+   
 }
