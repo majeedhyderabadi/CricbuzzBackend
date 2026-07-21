@@ -19,6 +19,11 @@ public class CommentaryEntry : BaseEntity
 
     public string? Note { get; set; }
 
+    public void UpdateNote(string? note)
+    {
+        Note = note;
+    }
+
     public static CommentaryEntry Create(
         Guid fixtureId,
         FixtureSide side,
