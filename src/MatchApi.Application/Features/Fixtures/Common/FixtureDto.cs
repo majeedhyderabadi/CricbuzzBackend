@@ -13,4 +13,5 @@ public record FixtureDto(
     int HomeScore,
     int? HomeWickets,
     int AwayScore,
-    int? AwayWickets);
+    int? AwayWickets,
+    Guid SportId);

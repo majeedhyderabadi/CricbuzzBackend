@@ -31,7 +31,8 @@ public class GetLiveFixturesQueryHandler : IRequestHandler<GetLiveFixturesQuery,
                 f.HomeScore.Runs,
                 f.HomeScore.Wickets,
                 f.AwayScore.Runs,
-                f.AwayScore.Wickets))
+                f.AwayScore.Wickets,
+                f.SportId))
             .ToList();
     }
 }

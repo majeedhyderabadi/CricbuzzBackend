@@ -47,6 +47,7 @@ public class UpdateFixtureCommandHandler : IRequestHandler<UpdateFixtureCommand,
             fixture.HomeScore.Runs,
             fixture.HomeScore.Wickets,
             fixture.AwayScore.Runs,
-            fixture.AwayScore.Wickets);
+            fixture.AwayScore.Wickets,
+            fixture.SportId);
     }
 }
