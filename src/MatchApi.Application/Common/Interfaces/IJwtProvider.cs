@@ -2,5 +2,5 @@
 
 public interface IJwtProvider
 {
-    string GenerateToken(Guid adminId, string email);
+    string GenerateToken(Guid adminId, string email, string role);
 }

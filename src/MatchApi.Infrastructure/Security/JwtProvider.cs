@@ -16,7 +16,7 @@ public class JwtProvider : IJwtProvider
         _configuration = configuration;
     }
 
-    public string GenerateToken(Guid adminId, string email)
+    public string GenerateToken(Guid adminId, string email, string role)
     {
         var key = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(
@@ -31,7 +31,7 @@ public class JwtProvider : IJwtProvider
         {
             new Claim(JwtRegisteredClaimNames.Sub, adminId.ToString()),
             new Claim(JwtRegisteredClaimNames.Email, email),
-            new Claim(ClaimTypes.Role, "Admin")
+            new Claim(ClaimTypes.Role, role)
         };
 
         var token = new JwtSecurityToken(

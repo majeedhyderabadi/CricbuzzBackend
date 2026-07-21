@@ -51,7 +51,8 @@ public class LoginCommandHandler
 
         var token = _jwtProvider.GenerateToken(
             admin.Id,
-            admin.Email);
+            admin.Email,
+            role);
 
         return new LoginResponse
         {
