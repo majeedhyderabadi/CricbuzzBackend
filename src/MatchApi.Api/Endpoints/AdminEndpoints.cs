@@ -54,7 +54,8 @@ public static class AdminEndpoints
                return Results.Ok(result);
            })
            .WithName("GetPendingApprovalRequests")
-           .WithSummary("Gets all pending admin approval requests.");
+           .WithSummary("Gets all pending admin approval requests.")
+           .RequireAuthorization("SuperAdminOnly");
 
         group.MapPut(
             "/approve/{id:guid}",
@@ -68,7 +69,8 @@ public static class AdminEndpoints
                 });
             })
             .WithName("ApproveAdmin")
-            .WithSummary("Approves an admin user.");
+            .WithSummary("Approves an admin user.")
+            .RequireAuthorization("SuperAdminOnly");
 
         group.MapGet(
                     "/all",
@@ -79,7 +81,8 @@ public static class AdminEndpoints
                         return Results.Ok(result);
                     })
                     .WithName("GetAllAdmins")
-                    .WithSummary("Gets all admin users.");
+                    .WithSummary("Gets all admin users.")
+                    .RequireAuthorization("SuperAdminOnly");
         return app;
     }
 }

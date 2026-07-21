@@ -5,13 +5,9 @@ using MatchApi.Application;
 using MatchApi.Application.Common.Interfaces;
 using MatchApi.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
-using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Text.RegularExpressions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,61 +15,79 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
-// SignalR powers the real-time commentary feed; the broadcaster adapts the
-// application layer's ICommentaryBroadcaster port onto a SignalR hub context.
-builder.Services.AddSignalR();
-builder.Services.AddScoped<ICommentaryBroadcaster, SignalRCommentaryBroadcaster>();
+    // SignalR powers the real-time commentary feed; the broadcaster adapts the
+    // application layer's ICommentaryBroadcaster port onto a SignalR hub context.
+    builder.Services.AddSignalR();
+    builder.Services.AddScoped<ICommentaryBroadcaster, SignalRCommentaryBroadcaster>();
 
-const string ReactClientCorsPolicy = "ReactClient";
-var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
-    ?? new[] { "http://localhost:5173" };
+    const string ReactClientCorsPolicy = "ReactClient";
+    var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+        ?? new[] { "http://localhost:5173" };
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(ReactClientCorsPolicy, policy =>
-        policy.WithOrigins(allowedOrigins)
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials());
-});
-
-builder.Services.AddAuthentication(
-    JwtBearerDefaults.AuthenticationScheme)
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters =
-        new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-
-            IssuerSigningKey =
-                new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(
-                        builder.Configuration["Jwt:Key"]!))
-        };
-});
-
-builder.Services.AddAuthorization();
-
-builder.Services.AddEndpointsApiExplorer();
-
-// Configure Swagger/OpenAPI
-
-builder.Services.AddSwaggerGen(options =>
-{
-    options.SwaggerDoc("v1", new OpenApiInfo
+    builder.Services.AddCors(options =>
     {
-        Title = "MatchApi",
-        Version = "v1",
-        Description = "Clean Architecture minimal API for managing fixtures."
+        options.AddPolicy(ReactClientCorsPolicy, policy =>
+            policy.WithOrigins(allowedOrigins)
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials());
     });
+
+    builder.Services.AddAuthentication(
+        JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters =
+            new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+
+                ValidIssuer = builder.Configuration["Jwt:Issuer"],
+
+                ValidAudience = builder.Configuration["Jwt:Audience"],
+
+                IssuerSigningKey =
+                    new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(
+                            builder.Configuration["Jwt:Key"]!))
+            };
+    });
+
+    builder.Services.AddAuthorization(options =>
+    {
+        options.AddPolicy("SuperAdminOnly", policy => policy.RequireRole("SuperAdmin"));
+    });
+
+    builder.Services.AddEndpointsApiExplorer();
+
+    // Configure Swagger/OpenAPI
+
+    builder.Services.AddSwaggerGen(options =>
+    {
+        options.SwaggerDoc("v1", new OpenApiInfo
+        {
+            Title = "MatchApi",
+            Version = "v1",
+            Description = "Clean Architecture minimal API for managing fixtures."
+        });
+
+        options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            Name = "Authorization",
+            Type = SecuritySchemeType.Http,
+            Scheme = "Bearer",
+            BearerFormat = "JWT",
+            In = ParameterLocation.Header,
+            Description = "Enter a JWT token obtained from /api/admin/login"
+        });
+
+        options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+        {
+            { new OpenApiSecuritySchemeReference("Bearer", document, null), new List<string>() }
+        });
 
     var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
@@ -100,6 +114,9 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors(ReactClientCorsPolicy);
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapAdminEndpoints();
 app.MapFixtureEndpoints();
