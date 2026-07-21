@@ -9,10 +9,12 @@ namespace MatchApi.Application.Features.Players.Commands.AddPlayers
      : IRequestHandler<AddPlayerCommand, ResponseResult<string>>
     {
         private readonly IPlayerRepository _repository;
+        private readonly ITeamRepository _teamRepository;
 
-        public AddPlayerCommandHandler(IPlayerRepository repository)
+        public AddPlayerCommandHandler(IPlayerRepository repository, ITeamRepository teamRepository)
         {
             _repository = repository;
+            _teamRepository = teamRepository;
         }
 
         public async Task<ResponseResult<string>> Handle(
@@ -27,6 +29,15 @@ namespace MatchApi.Application.Features.Players.Commands.AddPlayers
                     Message = "Player already exists for the given team."
                 };
             }
+
+            var team = await _teamRepository.GetByIdAsync(request.TeamId, cancellationToken);
+            if (team != null && team.Sport.Name.ToLower() == "cricket" && team.Players.Count > 11)
+                return new ResponseResult<string>
+                {
+                    Success = false,
+                    Message = "Maximum Players Reached. A team can have a maximum of 11 players."
+                };
+
             var player = new Player
             {
                 Id = Guid.NewGuid(),
