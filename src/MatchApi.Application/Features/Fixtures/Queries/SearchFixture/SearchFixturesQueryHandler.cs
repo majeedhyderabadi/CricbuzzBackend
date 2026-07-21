@@ -25,11 +25,24 @@ public class SearchFixturesQueryHandler
         return fixtures.Select(f => new SearchFixturesResponse
         {
             Id = f.Id,
+
+            HomeTeamId = f.HomeTeamId,
+            HomeTeamName = f.HomeTeam.Name,
+
+            AwayTeamId = f.AwayTeamId,
+            AwayTeamName = f.AwayTeam.Name,
+
+            SportId = f.SportId,
             Sport = f.Sport.Name,
-            HomeTeam = f.HomeTeam.Name,
-            AwayTeam = f.AwayTeam.Name,
+
             ScheduledAtUtc = f.ScheduledAtUtc,
-            Status = f.Status.ToString()
+            Status = f.Status.ToString(),
+
+            HomeScore = f.HomeScore.Runs,
+            HomeWickets = f.HomeScore.Wickets ?? 0,
+
+            AwayScore = f.AwayScore.Runs,
+            AwayWickets = f.AwayScore.Wickets ?? 0,
         }).ToList();
     }
 }
