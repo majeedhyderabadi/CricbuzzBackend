@@ -28,4 +28,11 @@ public class CommentaryRepository : ICommentaryRepository
             .Where(c => c.FixtureId == fixtureId)
             .ToListAsync(cancellationToken);
     }
+
+    public Task<CommentaryEntry?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return _context.CommentaryEntries
+            .Include(c => c.Player)
+            .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+    }
 }

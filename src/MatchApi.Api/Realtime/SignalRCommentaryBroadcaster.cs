@@ -24,4 +24,11 @@ public class SignalRCommentaryBroadcaster : ICommentaryBroadcaster
             .Group(CommentaryHub.GroupName(commentary.FixtureId))
             .SendAsync(CommentaryHub.CommentaryReceivedEvent, commentary, cancellationToken);
     }
+
+    public Task BroadcastUpdateAsync(CommentaryDto commentary, CancellationToken cancellationToken)
+    {
+        return _hubContext.Clients
+            .Group(CommentaryHub.GroupName(commentary.FixtureId))
+            .SendAsync(CommentaryHub.CommentaryUpdatedEvent, commentary, cancellationToken);
+    }
 }

@@ -9,6 +9,7 @@ namespace MatchApi.Api.Hubs;
 public class CommentaryHub : Hub
 {
     public const string CommentaryReceivedEvent = "CommentaryReceived";
+    public const string CommentaryUpdatedEvent = "CommentaryUpdated";
 
     public Task JoinFixtureGroup(Guid fixtureId)
     {
