@@ -1,19 +1,47 @@
 using MatchApi.Api.Endpoints;
+using MatchApi.Api.ExceptionHandling;
 using MatchApi.Api.Hubs;
 using MatchApi.Api.Realtime;
 using MatchApi.Application;
 using MatchApi.Application.Common.Interfaces;
 using MatchApi.Infrastructure;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using Serilog;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Serilog replaces the default logging provider. Console is always on; the Application Insights
+// sink is only added when ApplicationInsights:Enabled=true in config, which is how QA/Prod turn it
+// on (appsettings.json) while Development stays console-only (appsettings.Development.json).
+builder.Host.UseSerilog((context, loggerConfiguration) =>
+{
+    loggerConfiguration
+        .ReadFrom.Configuration(context.Configuration)
+        .Enrich.FromLogContext()
+        .WriteTo.Console();
+
+    var appInsightsEnabled = context.Configuration.GetValue<bool>("ApplicationInsights:Enabled");
+    var appInsightsConnectionString = context.Configuration["ApplicationInsights:ConnectionString"];
+
+    if (appInsightsEnabled && !string.IsNullOrWhiteSpace(appInsightsConnectionString))
+    {
+        var telemetryConfiguration = TelemetryConfiguration.CreateDefault();
+        telemetryConfiguration.ConnectionString = appInsightsConnectionString;
+
+        loggerConfiguration.WriteTo.ApplicationInsights(telemetryConfiguration, TelemetryConverter.Traces);
+    }
+});
+
 // Layer registrations (Clean Architecture composition root)
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 
     // SignalR powers the real-time commentary feed; the broadcaster adapts the
     // application layer's ICommentaryBroadcaster port onto a SignalR hub context.
@@ -99,6 +127,9 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
+app.UseExceptionHandler();
+app.UseSerilogRequestLogging();
+
 // Enable Swagger UI
 if (app.Environment.IsDevelopment())
 {
@@ -162,6 +193,9 @@ app.MapLiveCommentaryEndpoints();
 app.MapHub<CommentaryHub>("/hubs/commentary");
 
 app.MapGet("/", () => Results.Ok(new { service = "MatchApi", status = "running" }))
+    .ExcludeFromDescription();
+
+app.MapGet("/_test-exception", IResult () => throw new NullReferenceException("Temporary test of the global exception handler"))
     .ExcludeFromDescription();
 
 app.Run();
