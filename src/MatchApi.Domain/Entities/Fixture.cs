@@ -49,7 +49,7 @@ public class Fixture : BaseEntity
 
     public CommentaryEntry AddCommentary(FixtureSide side, Guid playerId, CommentaryAction action, string? note)
     {
-        if (Sport.Name != Enums.Sport.Cricket.ToString())
+        if (Sport.Name != Enums.Sport.Cricket.ToString() && Sport.Name != Enums.Sport.Football.ToString())
         {
             throw new InvalidOperationException("Ball-by-ball commentary is only supported for cricket fixtures.");
         }
